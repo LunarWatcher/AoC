@@ -7,7 +7,7 @@ add_executable(aoc-2025 aoc/Main.cpp)
 target_compile_definitions(
     aoc-2025 PUBLIC AOC_YEAR=2025
 )
-target_include_directories(aoc2025src PUBLIC ./) # TODO: make public
+target_include_directories(aoc2025src PUBLIC ./)
 target_link_libraries(
     aoc2025src
 PUBLIC

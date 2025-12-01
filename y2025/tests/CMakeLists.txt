@@ -8,8 +8,6 @@ add_executable(tests-2025
 
 Include(FetchContent)
 
-# TODO: Ensure this is up-to-date prior to using the code
-# The template will not be kept 100% up-to-date due to this being a waste of time
 FetchContent_Declare(
   Catch2
   GIT_REPOSITORY https://github.com/catchorg/Catch2.git
