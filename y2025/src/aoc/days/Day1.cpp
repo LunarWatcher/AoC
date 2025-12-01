@@ -39,13 +39,11 @@ int64_t Day1::part2() {
 
         auto res = std::div(ptr, 100);
 
-        zeroes += std::abs(
-            res.quot
+        zeroes += std::abs(res.quot)
             // Account for negative crossings (-18 / 100 == 0 rem 18, but a zero has been crossed).
             // We always need to add 1 for negative numbers, but only 1. 
             // -118 / 100 = 1 rem 18, and res.quot == 1, so adding 1 is all we need to do here.
             // This only applies if old_ptr > 0, as if it's just 0, no 0 has been crossed on L<n>
-        )
             + (ptr < 0 && old_ptr != 0 ? 1 : 0);
 
         if (ptr == 0) {
