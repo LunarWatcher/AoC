@@ -16,8 +16,8 @@ public:
     virtual ~Day() = default;
 
     virtual void parse() = 0;
-    virtual int64_t part1() = 0;
-    virtual int64_t part2() = 0;
+    virtual uint64_t part1() = 0;
+    virtual uint64_t part2() = 0;
 
     virtual int day() = 0;
 };

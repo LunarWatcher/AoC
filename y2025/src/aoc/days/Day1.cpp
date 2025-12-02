@@ -10,7 +10,7 @@ void Day1::parse() {
     );
 }
 
-int64_t Day1::part1() {
+uint64_t Day1::part1() {
     int ptr = 50;
     int zeroes = 0;
 
@@ -29,7 +29,7 @@ int64_t Day1::part1() {
     return zeroes;
 }
 
-int64_t Day1::part2() {
+uint64_t Day1::part2() {
     int ptr = 50;
     int zeroes = 0;
 

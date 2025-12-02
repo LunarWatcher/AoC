@@ -23,8 +23,8 @@ public:
     DECLARE_DAY(2025, 1);
 
     void parse() override;
-    int64_t part1() override;
-    int64_t part2() override;
+    uint64_t part1() override;
+    uint64_t part2() override;
 
 };
 
