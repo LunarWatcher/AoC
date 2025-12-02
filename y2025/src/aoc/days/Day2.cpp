@@ -1,7 +1,8 @@
 #include "Day2.hpp"
 #include "common/loader/Loader.hpp"
+#include <algorithm>
 #include <cmath>
-#include <regex>
+#include <set>
 
 namespace aoc2025 {
 
@@ -12,9 +13,6 @@ void Day2::parse() {
         ',',
         common::Loader::RangeLoader
     );
-    if (ranges.size() <= 1) {
-        throw std::runtime_error("Failed to parse");
-    }
 }
 
 uint64_t Day2::part1() {
@@ -32,15 +30,15 @@ uint64_t Day2::part1() {
         } else if (start.size() % 2 != 0) {
             // Start is odd: move range up
             auto order = start.size();
-            range.left = std::pow(10, order);
+            range.left = (uint64_t) std::pow(10, order);
             start = std::to_string(range.left);
         } else if (end.size() % 2 != 0) {
             // End is odd: move range down
             auto order = end.size() - 1;
-            range.right = std::pow(10, order) - 1;
+            range.right = (uint64_t) std::pow(10, order) - 1;
             end = std::to_string(range.right);
         }
-        std::cout << range.left << "-" << range.right << std::endl;
+        // std::cout << range.left << "-" << range.right << std::endl;
 
         if (range.right < range.left) {
             // Constraint solving pushed the range into an illegal area, so abort
@@ -97,7 +95,7 @@ uint64_t Day2::part1() {
             }
         }
 
-        std::cout << smallestIndexOfInterest << std::endl;
+        // std::cout << smallestIndexOfInterest << std::endl;
 
         // If the first half of the number is shared between the two, we know there's only one possible option:
         //
@@ -108,7 +106,7 @@ uint64_t Day2::part1() {
             auto add = std::stoull(substr + substr);
 
             if (add >= range.left && add <= range.right) {
-                std::cout << "ADD, FORCED: " << add << std::endl;
+                // std::cout << "ADD, FORCED: " << add << std::endl;
                 sum += add;
             }
             continue;
@@ -135,15 +133,45 @@ uint64_t Day2::part1() {
 }
 
 uint64_t Day2::part2() {
-    std::regex r{"(\\d+)(\\1)+", std::regex::optimize};
     uint64_t sum = 0;
     for (auto range : ranges) {
-        // I can't be bothered
-        for (uint64_t i = range.left; i <= range.right; ++i) {
+        std::set<uint64_t> prefixes;
+        for (uint64_t i = range.left;
+            i <= range.right;
+            i += std::min<uint64_t>(
+                    1,
+                    (uint64_t)std::pow(10, std::round(std::log10(i) / 2.0))
+                )
+            ) {
             auto str = std::to_string(i);
 
-            if (std::regex_match(str, r)) {
-                sum += i;
+            for (size_t n = 1; n <= (str.size() + 1) / 2; ++n) {
+                auto div = std::div(
+                    (long) str.size(),
+                    (long) n
+                );
+
+                if (div.rem != 0 || div.quot == 1) {
+                    continue;
+                }
+                auto prefix = std::stoull(
+                    str.substr(0, n)
+                );
+                uint64_t val = prefix;
+                for (size_t offset = 1; offset < (size_t) std::abs(div.quot); ++offset) {
+                    val += prefix * (uint64_t) std::pow(10ull, n * offset);
+                }
+
+                if (val >= range.left && val <= range.right) {
+                    if (prefixes.contains(val)) {
+                        continue;
+                    }
+                    prefixes.insert(val);
+                    sum += val;
+
+                    // std::cout << "INVALID ID: " << val << "," << i << std::endl;
+                }
+
             }
         }
     }
