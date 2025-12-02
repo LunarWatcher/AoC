@@ -20,11 +20,11 @@ inline std::ostream& operator<<(std::ostream& ss, const GetColourFor& v) {
     auto time = v.time;
     if (time < 10) {
         ss << stc::colour::fg<stc::colour::FourBitColour::BRIGHT_GREEN>;
-    } else if (time < 50) {
+    } else if (time < 250) {
         ss << stc::colour::fg<stc::colour::FourBitColour::GREEN>;
-    } else if (time < 100) {
+    } else if (time < 500) {
         ss << stc::colour::fg<stc::colour::FourBitColour::YELLOW>;
-    } else if (time < 200) {
+    } else if (time < 750) {
         ss << stc::colour::fg<stc::colour::FourBitColour::BRIGHT_RED>;
     } else {
         ss << stc::colour::fg<stc::colour::FourBitColour::RED>;

@@ -16,12 +16,12 @@ void Runner::runPart(int day, bool partB, double parseTime, std::function<int64_
     std::cout << "Day " << std::format("{:>2}", day) << ", part " << (partB ? "B" : "A")
         << " ("
             << GetColourFor{parseTime}
-            << std::format("{:<10}", parseTime)
+            << std::format("{:<15}", parseTime)
             << stc::colour::reset
             << " + "
             << GetColourFor{partTime}
             << stc::colour::use<stc::colour::Typography::BOLD>
-            << std::format("{:<10}", partTime)
+            << std::format("{:<15}", partTime)
             << stc::colour::reset
         << "): "
         << result
@@ -37,7 +37,7 @@ void Runner::run(int argc, const char* argv[], const DayList& implementedDays) {
 
     std::cout 
         << stc::colour::use<stc::colour::Typography::BOLD>
-        << "                Parse (ms)   Part (ms)"
+        << "                Parse (ms)        Part (ms)"
         << stc::colour::reset
         << std::endl;
     for (auto& day : implementedDays) {
