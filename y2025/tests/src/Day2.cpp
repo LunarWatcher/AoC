@@ -10,4 +10,7 @@ TEST_CASE("Day 2, test case", "[D2]") {
     SECTION("Part 1") {
         REQUIRE(d.part1() == 1227775554ll);
     }
+    SECTION("Part 2") {
+        REQUIRE(d.part2() == 4174379265ll);
+    }
 }

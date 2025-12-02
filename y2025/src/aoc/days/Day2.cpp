@@ -1,6 +1,7 @@
 #include "Day2.hpp"
 #include "common/loader/Loader.hpp"
 #include <cmath>
+#include <regex>
 
 namespace aoc2025 {
 
@@ -134,7 +135,20 @@ uint64_t Day2::part1() {
 }
 
 uint64_t Day2::part2() {
-    return -1;
+    std::regex r{"(\\d+)(\\1)+", std::regex::optimize};
+    uint64_t sum = 0;
+    for (auto range : ranges) {
+        // I can't be bothered
+        for (uint64_t i = range.left; i <= range.right; ++i) {
+            auto str = std::to_string(i);
+
+            if (std::regex_match(str, r)) {
+                sum += i;
+            }
+        }
+    }
+
+    return sum;
 }
 
 std::pair<std::string_view, std::string_view> Day2::substrHalf(
