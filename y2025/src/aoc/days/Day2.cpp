@@ -138,41 +138,30 @@ uint64_t Day2::part2() {
         std::set<uint64_t> prefixes;
         for (uint64_t i = range.left;
             i <= range.right;
-            i += std::min<uint64_t>(
-                    1,
-                    (uint64_t)std::pow(10, std::round(std::log10(i) / 2.0))
-                )
-            ) {
-            auto str = std::to_string(i);
+            ++i
+        ) {
+            std::string asStr = std::to_string(i);
+            std::string_view asView = asStr;
 
-            for (size_t n = 1; n <= (str.size() + 1) / 2; ++n) {
-                auto div = std::div(
-                    (long) str.size(),
-                    (long) n
-                );
-
-                if (div.rem != 0 || div.quot == 1) {
+            for (size_t sl = 1; sl <= asStr.size() / 2; ++sl) {
+                if (asStr.size() % sl != 0) {
                     continue;
                 }
-                auto prefix = std::stoull(
-                    str.substr(0, n)
-                );
-                uint64_t val = prefix;
-                for (size_t offset = 1; offset < (size_t) std::abs(div.quot); ++offset) {
-                    val += prefix * (uint64_t) std::pow(10ull, n * offset);
-                }
 
-                if (val >= range.left && val <= range.right) {
-                    if (prefixes.contains(val)) {
-                        continue;
+                auto segments = asStr.size() / sl;
+
+                for (size_t seg = 1; seg < segments; ++seg) {
+                    if (asView.substr(seg * sl, sl) != asView.substr(0, sl)) {
+                        goto nope;
                     }
-                    prefixes.insert(val);
-                    sum += val;
-
-                    // std::cout << "INVALID ID: " << val << "," << i << std::endl;
                 }
-
+                {
+                    sum += i;
+                    break;
+                }
+nope:;
             }
+
         }
     }
 
