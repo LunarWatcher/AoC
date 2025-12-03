@@ -23,5 +23,5 @@ TEST_CASE("Day 3 regression tests") {
     Day3 d;
     d.parse();
     REQUIRE(d.part1() == 17535);
-    // REQUIRE(d.part2() == 31578210022ull);
+    REQUIRE(d.part2() == 173577199527257ull);
 }
