@@ -19,15 +19,26 @@ struct Range {
     }
 };
 
+struct IntStream {
+    std::vector<int64_t> data;
+
+    IntStream(const std::string& line) {
+        for (auto& ch : line) {
+            data.push_back(ch - '0');
+        }
+    }
+};
+
 template <typename T>
 T naiveLoader(const std::string& line) {
-    return T(line);
+    return T{line};
 }
 
 constexpr inline auto RangeLoader = naiveLoader<Range>;
+constexpr inline auto IntStreamLoader = naiveLoader<IntStream>;
 
 template <typename T>
-std::vector<T> loadVector(std::filesystem::path input, std::function<T(const std::string& line)> parser) {
+std::vector<T> loadVector(const std::filesystem::path& input, std::function<T(const std::string& line)> parser) {
     std::ifstream f(input);
     if (!f) {
         throw std::runtime_error("Failed to find " + input.string());
@@ -46,7 +57,7 @@ std::vector<T> loadVector(std::filesystem::path input, std::function<T(const std
 
 template <typename T>
 std::vector<T> loadSingleLineVector(
-    std::filesystem::path input,
+    const std::filesystem::path& input,
     char delim,
     std::function<T(const std::string& line)> parser
 ) {

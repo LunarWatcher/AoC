@@ -2,6 +2,7 @@
 
 #include "aoc/days/Day1.hpp"
 #include "aoc/days/Day2.hpp"
+#include "aoc/days/Day3.hpp"
 
 using namespace aoc2025;
 
@@ -16,4 +17,11 @@ TEST_CASE("Day 2 regression tests") {
     d.parse();
     REQUIRE(d.part1() == 28846518423ull);
     REQUIRE(d.part2() == 31578210022ull);
+}
+
+TEST_CASE("Day 3 regression tests") {
+    Day3 d;
+    d.parse();
+    REQUIRE(d.part1() == 17535);
+    // REQUIRE(d.part2() == 31578210022ull);
 }
