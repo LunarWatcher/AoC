@@ -1,5 +1,6 @@
 #include "Day3.hpp"
 #include "common/loader/Loader.hpp"
+#include <algorithm>
 
 namespace aoc2025 {
 
@@ -11,58 +12,49 @@ void Day3::parse() {
 }
 
 
-std::pair<int64_t, int64_t> Day3::calculateBank(const std::vector<int64_t>& bank) {
-    std::pair<int64_t, int64_t> last;
-    int64_t head = bank.at(0);
-    int64_t tail = 0;
-    // std::cout << "Checking new bank" << std::endl;
-    for (size_t i = 1; i < bank.size(); ++i) {
-        auto val = bank.at(i);
-        if (val > head) {
-            if (
-                val > tail
-                && last.first <= head
-                && last.second < val
-            ) {
-                last = { head, val };
-            }
-            // std::cout << "head" << head << "val" << val << "tail" << tail 
-            //     << "last" << last.first << last.second
-            //     << "eval" << (val > tail) << (last.first >= head) << (last.second < val) 
-            //     << std::endl;
-            head = val;
-            tail = 0;
-        } else if (val > tail) {
-            tail = val;
-            last = { head, tail };
-        }
-
-        // std::cout << last.first << last.second << std::endl;
-
-        if (head == 9 && tail == 9) {
-            return last;
-        }
+std::vector<int64_t> Day3::calculateBank(
+    const std::vector<int64_t>& bank,
+    size_t bankSize
+) {
+    // Start at the highest element that's far enough away from the end to fit a full series
+    // We know that given 
+    //  12345xxxx
+    // and bankSize = 5, 5xxxx is guaranteed to be the biggest number. 
+    // equivalently, for
+    //  12345xxxxxxxxxxxxxxxxxxxxx
+    // and bankSize = 5 and where each x <= 4, the number will start with that max value.
+    std::vector<int64_t> last;
+    size_t startIdx = 0;
+    while(last.size() < bankSize) {
+        auto max = std::max_element(
+            bank.begin() + (int64_t) startIdx,
+            bank.end() - (int64_t) (bankSize - last.size() -1)
+        );
+        startIdx = std::distance(bank.begin(), max) + 1;
+        last.push_back(*max);
     }
-    if (last.first >= head && last.second < tail) {
-        // std::cout << "End found: " << head << tail << std::endl;
-        return { head, tail };
-    }
-    // std::cout << "Passthrough, last seen: " << head << tail << std::endl;
+
     return last;
 }
 
 uint64_t Day3::part1() {
     uint64_t sum = 0;
     for (const auto& [bank] : banks) {
-        auto last = calculateBank(bank);
-        sum += last.first * 10 + last.second;
+        sum += vec2int(
+            calculateBank(bank, 2)
+        );
     }
-
     return sum;
 }
 
 uint64_t Day3::part2() {
-    return 0;
+    uint64_t sum = 0;
+    for (const auto& [bank] : banks) {
+        sum += vec2int(
+            calculateBank(bank, 12)
+        );
+    }
+    return sum;
 }
 
 }
