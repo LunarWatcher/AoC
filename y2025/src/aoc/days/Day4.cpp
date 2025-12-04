@@ -39,6 +39,9 @@ uint64_t Day4::checkRemovable(
                 if (map.at(loc->second).at(loc->first) == TileType::TOILET_ROLL) {
                     ++tileNeighbours;
                 }
+                if (tileNeighbours == 4) {
+                    break;
+                }
             }
             if (tileNeighbours < 4) {
                 neighbours.push_back({x, y});
