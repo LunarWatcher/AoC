@@ -32,6 +32,10 @@ public:
     uint64_t part1() override;
     uint64_t part2() override;
 
+    uint64_t checkRemovable(
+        decltype(map)& map,
+        bool mutate
+    );
 
     std::optional<std::pair<size_t, size_t>> isInBounds(
         const decltype(map)& map,
