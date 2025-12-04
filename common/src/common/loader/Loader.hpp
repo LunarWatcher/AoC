@@ -61,6 +61,35 @@ std::vector<T> loadVector(const std::filesystem::path& input, std::function<T(co
     }
     return out;
 }
+
+template <typename T>
+std::vector<std::vector<T>> mapLoader(
+    const std::filesystem::path& input,
+    std::function<T(char)> parser
+) {
+    std::ifstream f(input);
+    if (!f) {
+        throw std::runtime_error("Failed to find " + input.string());
+    }
+
+    std::vector<std::vector<T>> out;
+    std::vector<T> line;
+    char ch;
+    while (f >> ch) {
+        line.push_back(parser(ch));
+        if (f.peek() == '\n') {
+            out.push_back(line);
+            line.clear();
+            f.ignore();
+        }
+    }
+    if (!line.empty()) {
+        out.push_back(line);
+    }
+    return out;
+
+}
+
 template <typename T>
 std::vector<T> loadIntVector(const std::filesystem::path& input) {
     std::ifstream f(input);
