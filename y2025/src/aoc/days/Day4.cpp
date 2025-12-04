@@ -4,13 +4,13 @@
 namespace aoc2025 {
 
 void Day4::parse() {
-    map = common::Loader::loadMap<TileType>(
+    map = common::Loader::loadMap<Tile>(
         this->path,
         [](char ch) {
             if (ch == '.') {
-                return TileType::EMPTY;
+                return Tile {TileType::EMPTY};
             } else if (ch == '@') {
-                return TileType::TOILET_ROLL;
+                return Tile {TileType::TOILET_ROLL};
             } else {
                 throw std::runtime_error("Unknown tile type: " + std::string{ch});
             }
@@ -22,14 +22,17 @@ void Day4::parse() {
 
 uint64_t Day4::checkRemovable(
     decltype(map)& map,
-    bool mutate
+    int cycle
 ) {
-    std::vector<std::pair<int64_t, int64_t>> neighbours;
-    // We won't need this much on the average run. My part 1 result was like 1500
-    neighbours.reserve(2000);
+    int64_t markedForDeathInCycle = 0;
+
     for (int64_t y = 0; y < this->height; ++y) {
         for (int64_t x = 0; x < this->width; ++x) {
-            if (map.at(y).at(x) != TileType::TOILET_ROLL) {
+            auto& tile = map.at(y).at(x);
+            if (
+                tile.markedForDeathInCycle != -1 
+                || tile.t != TileType::TOILET_ROLL
+            ) {
                 continue;
             }
             int tileNeighbours = 0;
@@ -38,6 +41,7 @@ uint64_t Day4::checkRemovable(
                     if (i == 0 && j == 0) {
                         continue;
                     }
+
                     auto dx = x + i;
                     if (dx < 0 || dx >= width) {
                         continue;
@@ -46,8 +50,9 @@ uint64_t Day4::checkRemovable(
                     if (dy < 0 || dy >= height) {
                         continue;
                     }
+                    auto t2 = map.at(dy).at(dx);
 
-                    if (map.at(dy).at(dx) == TileType::TOILET_ROLL) {
+                    if (t2.markedForDeathInCycle == -1 && t2.t == TileType::TOILET_ROLL) {
                         ++tileNeighbours;
 
                         if (tileNeighbours == 4) {
@@ -57,17 +62,13 @@ uint64_t Day4::checkRemovable(
                 }
             }
             if (tileNeighbours < 4) {
-                neighbours.push_back({x, y});
+                markedForDeathInCycle += 1;
+                tile.markedForDeathInCycle = cycle;
             }
 out:;
         }
     }
-    if (mutate) {
-        for (auto& [x, y] : neighbours) {
-            map.at(y).at(x) = TileType::EMPTY;
-        }
-    }
-    return neighbours.size();
+    return markedForDeathInCycle;
 }
 
 uint64_t Day4::part1() {
@@ -78,14 +79,18 @@ uint64_t Day4::part1() {
 uint64_t Day4::part2() {
     auto map = this->map;
     uint64_t sum = 0;
+    int cycle = 0;
     while (true) {
-        auto s = checkRemovable(map, true);
+        auto s = checkRemovable(
+            map,
+            cycle
+        );
         if (s > 0) {
             sum += s;
         } else {
             break;
         }
-
+        ++cycle;
     }
     return sum;
 }

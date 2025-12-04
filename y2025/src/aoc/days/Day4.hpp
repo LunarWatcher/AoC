@@ -11,9 +11,14 @@ enum class TileType : char {
     TOILET_ROLL = '@'
 };
 
+struct Tile {
+    TileType t;
+    int markedForDeathInCycle = -1;
+};
+
 class Day4 : public common::Day {
 public:
-    std::vector<std::vector<TileType>> map;
+    std::vector<std::vector<Tile>> map;
     int64_t width;
     int64_t height;
 
@@ -25,27 +30,8 @@ public:
 
     uint64_t checkRemovable(
         decltype(map)& map,
-        bool mutate
+        int cycle = 0
     );
-
-    std::optional<std::pair<size_t, size_t>> isInBounds(
-        const decltype(map)& map,
-        size_t x,
-        size_t y,
-        const std::pair<int64_t, int64_t>& dir
-    ) {
-        if ((dir.first < 0 && x == 0) || (dir.second < 0 && y == 0)) {
-            return std::nullopt;
-        }
-
-        x = x + dir.first;
-        y = y + dir.second;
-
-        if (x < map.at(0).size() && y < map.at(0).size()) {
-            return std::pair<size_t, size_t> { x, y };
-        }
-        return std::nullopt;
-    }
 
 };
 
