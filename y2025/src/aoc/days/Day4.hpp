@@ -12,19 +12,10 @@ enum class TileType : char {
 };
 
 class Day4 : public common::Day {
-private:
-    static inline std::vector<std::pair<int64_t, int64_t>> neighbours = {
-        {1, 0},
-        {-1, 0},
-        {0, 1},
-        {0, -1},
-        {1, 1},
-        {-1, -1},
-        {-1, 1},
-        {1, -1},
-    };
 public:
     std::vector<std::vector<TileType>> map;
+    int64_t width;
+    int64_t height;
 
     DECLARE_DAY(2025, 4);
 

@@ -63,7 +63,7 @@ std::vector<T> loadVector(const std::filesystem::path& input, std::function<T(co
 }
 
 template <typename T>
-std::vector<std::vector<T>> mapLoader(
+std::vector<std::vector<T>> loadMap(
     const std::filesystem::path& input,
     std::function<T(char)> parser
 ) {
@@ -87,7 +87,33 @@ std::vector<std::vector<T>> mapLoader(
         out.push_back(line);
     }
     return out;
+}
 
+template <typename T>
+std::vector<std::pair<int64_t, int64_t>> loadSimpleMap(
+    const std::filesystem::path& input,
+    std::function<T(char)> parser
+) {
+    std::ifstream f(input);
+    if (!f) {
+        throw std::runtime_error("Failed to find " + input.string());
+    }
+
+    std::vector<std::vector<T>> out;
+    std::vector<T> line;
+    char ch;
+    while (f >> ch) {
+        line.push_back(parser(ch));
+        if (f.peek() == '\n') {
+            out.push_back(line);
+            line.clear();
+            f.ignore();
+        }
+    }
+    if (!line.empty()) {
+        out.push_back(line);
+    }
+    return out;
 }
 
 template <typename T>
