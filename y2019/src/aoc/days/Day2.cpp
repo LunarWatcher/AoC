@@ -20,8 +20,8 @@ uint64_t Day2::part1() {
 }
 
 uint64_t Day2::part2() {
-    for (int64_t n = 0; n < 99; ++n) {
-        for (int64_t v = 0; v < 99; ++v) {
+    for (int64_t n = 0; n <= 99; ++n) {
+        for (int64_t v = 0; v <= 99; ++v) {
             computer.recode({
                 {1, n},
                 {2, v}
