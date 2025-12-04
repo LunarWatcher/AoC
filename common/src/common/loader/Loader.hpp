@@ -54,6 +54,23 @@ std::vector<T> loadVector(const std::filesystem::path& input, std::function<T(co
     }
     return out;
 }
+template <typename T>
+std::vector<T> loadIntVector(const std::filesystem::path& input) {
+    std::ifstream f(input);
+    if (!f) {
+        throw std::runtime_error("Failed to find " + input.string());
+    }
+
+    // TODO: This isn't particularly fast. Can we make it more speed?
+    std::vector<T> out;
+    T val;
+    
+    while (f >> val) {
+        out.push_back(val);
+    }
+
+    return out;
+}
 
 template <typename T>
 std::vector<T> loadSingleLineVector(

@@ -1,4 +1,6 @@
 add_executable(tests-2019
+    src/Day1Tests.cpp
+
     # Exists to allow for improvements without needing to manually check new answers.
     # This contains tests against the expected output on the real input.
     src/RegressionTests.cpp
