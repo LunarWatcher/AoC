@@ -7,6 +7,13 @@
 #include <vector>
 #include <stc/StringUtil.hpp>
 
+/**
+ * Defines the standard loader structures. 
+ *
+ * For now, this module is in an expansion phase. More Stuff:tm: is added on demand. Refactoring is attempted when
+ * needed, but there's a lot of different puzzle inputs wher the path to standardisation won't be clear until Later:tm:.
+ * There will therefore be some redundancy.
+ */
 namespace common::Loader {
 
 struct Range {
@@ -88,6 +95,29 @@ std::vector<T> loadSingleLineVector(
     while (std::getline(f, buff, delim)) {
         // TODO: this probably includes a newline that needs to be stripped
         out.push_back(parser(buff));
+    }
+
+    return out;
+}
+
+template <typename T>
+std::vector<T> loadSingleLineIntVector(
+    const std::filesystem::path& input
+) {
+    std::ifstream f(input);
+    if (!f) {
+        [[unlikely]]
+        throw std::runtime_error("Failed to find " + input.string());
+    }
+    std::vector<T> out;
+
+    T val;
+    while (f >> val) {
+        out.push_back(val);
+
+        if (f.peek() == ',') {
+            f.ignore();
+        }
     }
 
     return out;
