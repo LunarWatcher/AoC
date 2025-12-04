@@ -1,0 +1,48 @@
+run() {
+    make -j $(nproc) "aoc-${UMBRA_DEVENV_ENVIRONMENT}"
+    "./bin/aoc-${UMBRA_DEVENV_ENVIRONMENT}" $@
+}
+
+tests() {
+    make -j $(nproc) "tests-${UMBRA_DEVENV_ENVIRONMENT}"
+    "./bin/tests-${UMBRA_DEVENV_ENVIRONMENT}" $@
+}
+
+debug() {
+    make -j $(nproc) "tests-${UMBRA_DEVENV_ENVIRONMENT}"
+    gdb "./bin/tests-${UMBRA_DEVENV_ENVIRONMENT}" 
+}
+
+callgrind() {
+    if [[ "$1" != "" && "$1" != "tests" ]]; 
+    then
+        echo "Usage:"
+        echo 
+        echo "Run main binary"
+        echo "  profile"
+        echo "Run test binary"
+        echo "  profile tests"
+        exit -2
+    fi
+ on kernel 6.14 due to an upstream bug, so it has not been tested
+    make -j $(nproc) "${1:-aoc}-${UMBRA_DEVENV_ENVIRONMENT}"
+    valgrind --tool=callgrind --callgrind-out-file=callgrind-out -- "./bin/${1:-aoc}-${UMBRA_DEVENV_ENVIRONMENT}" $@
+    callgrind_annotate callgrind-out | less
+}
+profile() {
+    if [[ "$1" != "" && "$1" != "tests" ]];
+    then
+        echo "Usage:"
+        echo 
+        echo "Run main binary"
+        echo "  profile"
+        echo "Run test binary"
+        echo "  profile tests"
+        exit -2
+    fi
+
+    make -j $(nproc) "${1:-aoc}-${UMBRA_DEVENV_ENVIRONMENT}"
+    perf -- "./bin/${1:-aoc}-${UMBRA_DEVENV_ENVIRONMENT}" $@
+}
+
+# vim:ft=bash
