@@ -178,4 +178,31 @@ std::vector<T> loadSingleLineIntVector(
     return out;
 }
 
+template <typename T>
+T splitLoader(
+    const std::filesystem::path& input,
+    std::function<void(T&, const std::string& line, int mode)> parser
+) {
+    std::ifstream f(input);
+    if (!f) {
+        throw std::runtime_error("Failed to find " + input.string());
+    }
+    T out;
+
+    std::string buff;
+    int mode = 0;
+    while (std::getline(f, buff)) {
+        if (buff == "") {
+            ++mode;
+            continue;
+        }
+        parser(
+            out, buff, mode
+        );
+    }
+
+    return out;
+
+}
+
 }
