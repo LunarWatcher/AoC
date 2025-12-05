@@ -19,6 +19,7 @@ public:
     void parse() override;
     uint64_t part1() override;
     uint64_t part2() override;
+    bool contains(const common::Loader::Range& r, uint64_t val);
 
 };
 

@@ -3,6 +3,7 @@ add_executable(tests-2025
     src/Day2Tests.cpp
     src/Day3Tests.cpp
     src/Day4Tests.cpp
+    src/Day5Tests.cpp
 
     # Exists to allow for improvements without needing to manually check new answers.
     # This contains tests against the expected output on the real input.
