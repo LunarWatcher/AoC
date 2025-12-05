@@ -30,7 +30,7 @@ uint64_t Day4::checkRemovable(
         for (int64_t x = 0; x < this->width; ++x) {
             auto& tile = map.at(y).at(x);
             if (
-                tile.markedForDeathInCycle != -1 
+                (tile.markedForDeathInCycle != -1 && tile.markedForDeathInCycle != cycle)
                 || tile.t != TileType::TOILET_ROLL
             ) {
                 continue;
@@ -52,7 +52,12 @@ uint64_t Day4::checkRemovable(
                     }
                     auto t2 = map.at(dy).at(dx);
 
-                    if (t2.markedForDeathInCycle == -1 && t2.t == TileType::TOILET_ROLL) {
+                    if (
+                        (t2.markedForDeathInCycle == -1
+                        || t2.markedForDeathInCycle == cycle
+                         ) 
+                        && t2.t == TileType::TOILET_ROLL
+                    ) {
                         ++tileNeighbours;
 
                         if (tileNeighbours == 4) {
