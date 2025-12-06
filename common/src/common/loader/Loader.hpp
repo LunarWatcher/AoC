@@ -134,6 +134,39 @@ std::vector<T> loadIntVector(const std::filesystem::path& input) {
     return out;
 }
 
+/**
+ * This should not be used unless absolutely necessary. All input parsing beyond day-specific logic should be converted
+ * into reusable functions in case it returns. Use this if you've never seen a specific kind of parsing before, and
+ * can't standardise without more sample sizes
+ *
+ * (Note that can be done with loadVector<string>, but it's separated to more easily find references for stuff that may
+ * be refactorable)
+ * 
+ *
+ * ## Current uses
+ *
+ * * Column parsing where all N lines are required for each column to be valid: 
+ *     * 2025 day 6
+ */
+inline std::vector<std::string> getRawLinesForProcessing(
+    const std::filesystem::path& input
+) {
+    std::ifstream f(input);
+    if (!f) {
+        throw std::runtime_error("Failed to find " + input.string());
+    }
+
+    std::vector<std::string> out;
+    std::string buff;
+    while (std::getline(f, buff)) {
+        out.push_back(
+            buff
+        );
+    }
+    return out;
+
+}
+
 template <typename T>
 std::vector<T> loadSingleLineVector(
     const std::filesystem::path& input,

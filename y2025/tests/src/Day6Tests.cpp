@@ -6,8 +6,8 @@ TEST_CASE("Day 6, main test", "[D6][MainTest]") {
     d.parse();
 
     SECTION("Parsing") {
-        REQUIRE(d.input.lines.size() == 3);
-        REQUIRE(d.input.ops.size() == 4);
+        REQUIRE(d.input.size() == 4);
+        REQUIRE(d.input.at(0).nums.size() == 3);
     }
 
     SECTION("Part 1") {

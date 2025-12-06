@@ -4,72 +4,48 @@
 namespace aoc2025 {
 
 void Day6::parse() {
-    this->input = common::Loader::splitLoader<D6Input>(
-        this->path,
-        [](D6Input& data, const std::string& line, int mode) {
-            std::stringstream ss;
-            ss << line;
-            if (mode == 0) {
-                int64_t val;
-                std::vector<int64_t> out;
+    auto lines = common::Loader::getRawLinesForProcessing(this->path);
 
-                while (ss >> val) {
-                    out.push_back(val);
-                }
+    size_t i = 0;
+    size_t strLen = lines.at(0).size();
+    while (i < strLen) {
+        // Assume 0 is the start of the block
+        auto& opLine = lines.back();
+        auto op = opLine.at(i);
+        auto nextNonSpace = opLine.find_first_not_of(' ', i + 1);
+        // extra -1 to account for the mandatory and intentional space between each round
+        auto len = (nextNonSpace == std::string::npos ? strLen : (nextNonSpace - 1)) - i; 
+        std::vector<std::string> nums;
+        // We have already parsed the op line
+        nums.reserve(lines.size() - 1);
+        for (size_t n = 0; n < lines.size() - 1; ++n) {
+            nums.push_back(lines.at(n).substr(i, len));
+        }
 
-                data.lines.push_back(out);
-            } else {
-                char v;
-                while (ss >> v) {
-                    if (v == ' ' || v == '\n') {
-                        continue;
-                    }
-                    switch (v) {
-                    case '*':
-                        data.ops.push_back(Operator::MULT);
-                        break;
-                    case '+':
-                        data.ops.push_back(Operator::ADD);
-                        break;
-                    default:
-                        throw std::runtime_error("Good job idiot: " + std::to_string(v));
-                    }
-                }
-            }
-        },
-        [](const auto& line, int currMode) {
-            if (std::isdigit(line[0]) == 0) {
-                if (currMode != 0) {
-                    throw std::runtime_error("Parsing error: found " + std::to_string(currMode) + " but found " + line);
-                }
-                return true;
-            }
-            return false;
-        },
-        true
-    );
+        i += len + 1;
 
+        this->input.push_back(Column {
+            nums, 
+            op == '*' ? Operator::MULT : Operator::ADD
+        });
+    }
 }
 
 uint64_t Day6::part1() {
     uint64_t sum = 0;
 
-    for (size_t i = 0; i < input.ops.size(); ++i) {
-        int64_t intermediate;
-        switch (input.ops.at(i)) {
-        case Operator::MULT: {
-            intermediate = 1;
-            for (const auto& line : input.lines) {
-                intermediate *= line.at(i);
-            }
-        } break;
-        case Operator::ADD: {
-            intermediate = 0;
-            for (const auto& line : input.lines) {
-                intermediate += line.at(i);
-            }
-        } break;
+    for (const auto& column : input) {
+        int64_t intermediate = column.op == Operator::MULT ? 1 : 0;
+        for (auto& line : column.nums) {
+            switch (column.op) {
+            case Operator::MULT: {
+                intermediate *= std::stoll(line); 
+            } break;
+            case Operator::ADD: {
+                intermediate += std::stoll(line);
+            } break;
 
+            }
         }
 
         sum += intermediate;
@@ -80,39 +56,30 @@ uint64_t Day6::part1() {
 
 uint64_t Day6::part2() {
     uint64_t sum = 0;
-    for (int64_t i = (int64_t) input.ops.size() - 1; i >= 0; --i) {
-
-        for (size_t p = 0; p < 4; ++p) {
-            int64_t intermediate = input.ops.at(i) == Operator::MULT ? 1 : 0;
-            std::string stringifiedVal;
-            for (const auto& line : input.lines) {
-                std::string asString = std::to_string(line.at(i));
-
-                if (asString.size() > p) {
-                    stringifiedVal += asString.at(p);
+    for (const auto& column : input) {
+        int64_t intermediate = column.op == Operator::MULT ? 1 : 0;
+        for (size_t x = 0; x < column.nums.at(0).size(); ++x) {
+            std::string n;
+            for (auto& line : column.nums) {
+                if (line.at(x) != ' ') {
+                    n += line.at(x);
                 }
             }
-            if (stringifiedVal.size() == 0) {
-                continue;
-            }
+            auto val = std::stoll(n);
 
-            int64_t val = std::stoll(stringifiedVal);
-            switch (input.ops.at(i)) {
+            switch (column.op) {
             case Operator::MULT: {
-                intermediate *= val;
+                intermediate *= val; 
             } break;
             case Operator::ADD: {
                 intermediate += val;
             } break;
 
             }
-
-            std::cout << "SUM ADD " << intermediate << std::endl;
-            sum += intermediate;
         }
+        sum += intermediate;
 
     }
-
     return sum;
 }
 

@@ -9,16 +9,14 @@ enum class Operator {
     MULT, ADD
 };
 
-struct D6Input {
-    std::vector<
-        std::vector<int64_t>
-    > lines;
-    std::vector<Operator> ops;
-};  
+struct Column {
+    std::vector<std::string> nums;
+    Operator op;
+};
 
 class Day6 : public common::Day {
 public:
-    D6Input input;
+    std::vector<Column> input;
 
     DECLARE_DAY(2025, 6);
 
