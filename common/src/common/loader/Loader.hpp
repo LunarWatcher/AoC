@@ -181,7 +181,11 @@ std::vector<T> loadSingleLineIntVector(
 template <typename T>
 T splitLoader(
     const std::filesystem::path& input,
-    std::function<void(T&, const std::string& line, int mode)> parser
+    std::function<void(T&, const std::string& line, int mode)> parser,
+    std::function<bool(const std::string& line, int currMode)> modeChecker = [](const std::string& l, int) {
+        return l == "";
+    },
+    bool modeChangeIsParsed = false
 ) {
     std::ifstream f(input);
     if (!f) {
@@ -192,9 +196,11 @@ T splitLoader(
     std::string buff;
     int mode = 0;
     while (std::getline(f, buff)) {
-        if (buff == "") {
+        if (modeChecker(buff, mode)) {
             ++mode;
-            continue;
+            if (!modeChangeIsParsed) {
+                continue;
+            }
         }
         parser(
             out, buff, mode
