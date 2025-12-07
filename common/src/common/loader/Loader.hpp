@@ -4,6 +4,7 @@
 #include <fstream>
 #include <functional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include <stc/StringUtil.hpp>
 
@@ -73,6 +74,27 @@ std::vector<T> loadVector(const std::filesystem::path& input, std::function<T(co
             parser(buff)
         );
     }
+    return out;
+}
+
+template <typename K, typename V>
+std::unordered_map<K, std::vector<V>> loadLinkedStringMap(
+    const std::filesystem::path& input,
+    std::function<std::pair<K, V>(const std::string&)> parser
+) {
+    std::unordered_map<K, std::vector<V>> out;
+
+    std::ifstream f(input);
+    if (!f) {
+        throw std::runtime_error("Failed to find " + input.string());
+    }
+
+    std::string buff;
+    while (std::getline(f, buff)) {
+        auto [k, v] = parser(buff);
+        out[k].push_back(v);
+    }
+
     return out;
 }
 

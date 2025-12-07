@@ -5,6 +5,7 @@
 #include "aoc/days/Day3.hpp"
 #include "aoc/days/Day4.hpp"
 #include "aoc/days/Day5.hpp"
+#include "aoc/days/Day6.hpp"
 
 using namespace aoc2019;
 
@@ -42,4 +43,11 @@ TEST_CASE("Day 5", "[Regression]") {
     d.parse();
     REQUIRE(d.part1() == 6731945ull);
     REQUIRE(d.part2() == 9571668ull);
+}
+
+TEST_CASE("Day 6", "[Regression]") {
+    Day6 d;
+    d.parse();
+    REQUIRE(d.part1() == 227612);
+    REQUIRE(d.part2() == 454);
 }
