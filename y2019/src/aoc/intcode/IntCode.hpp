@@ -11,7 +11,23 @@ struct Opcode4 {
     int64_t destAddr;
 };
 
-using Program = std::vector<int64_t>;
+
+struct Program {
+    std::vector<int64_t> ram;
+
+    int64_t resolveReference(
+        size_t addr
+    ) const {
+        return ram.at(ram.at(addr));
+    }
+    int64_t resolveImmediateMode(
+        size_t addr
+    ) const {
+        return ram.at(addr);
+    }
+
+    int64_t& at(size_t n) { return ram.at(n); }
+};
 
 class IntCode {
 private:
@@ -33,6 +49,9 @@ public:
 
     IntCode() = default;
     IntCode(const std::vector<int64_t>& instructions);
+
+    int64_t resolveReference(const Program& ram, size_t addr);
+    int64_t resolveImmediateMode(const Program& ram, size_t addr);
 
     /**
      * Used to recode the working set. Pass an empty vector to reset workingSet to source.

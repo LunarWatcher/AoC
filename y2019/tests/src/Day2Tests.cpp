@@ -9,6 +9,6 @@ TEST_CASE("Day 2, main test case", "[D2][MainTest]") {
 
     SECTION("Parsing") {
         auto& comp = d.computer;
-        REQUIRE(comp.source.size() == 12);
+        REQUIRE(comp.source.ram.size() == 12);
     }
 }

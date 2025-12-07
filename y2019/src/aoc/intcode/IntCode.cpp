@@ -16,7 +16,7 @@ void IntCode::recode(
 ) {
     workingSet = source;
     for (const auto& [pos, val] : modifications) {
-        workingSet.at(pos) = val;
+        workingSet.ram.at(pos) = val;
     }
 }
 
@@ -26,13 +26,9 @@ Opcode4 IntCode::resolveOp4(
 ) {
     // TODO: I'm not happy that these are chained like this. Maybe it makes sense to add some form of helper struct?
     return {
-        ram.at(
-            ram.at(opcodeAddr + 1)
-        ),
-        ram.at(
-            ram.at(opcodeAddr + 2)
-        ),
-        ram.at(opcodeAddr + 3)
+        ram.resolveReference(opcodeAddr + 1),
+        ram.resolveReference(opcodeAddr + 2),
+        ram.resolveImmediateMode(opcodeAddr + 3)
     };
 }
 
@@ -46,7 +42,7 @@ int64_t IntCode::run(
 
     bool running = true;
     while (running) {
-        auto op = ram.at(ptr);
+        auto op = ram.resolveImmediateMode(ptr);
 
         switch (op) {
         case 1: {
