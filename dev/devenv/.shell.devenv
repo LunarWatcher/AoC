@@ -19,9 +19,9 @@ callgrind() {
         echo "Usage:"
         echo 
         echo "Run main binary"
-        echo "  profile"
+        echo "  callgrind"
         echo "Run test binary"
-        echo "  profile tests"
+        echo "  callgrind tests"
         exit -2
     fi
 
