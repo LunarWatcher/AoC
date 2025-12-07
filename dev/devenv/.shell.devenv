@@ -45,6 +45,31 @@ profile() {
     perf -- "./bin/${1:-aoc}-${UMBRA_DEVENV_ENVIRONMENT}" $@
 }
 
+createday() {
+    day=$1
+    year=${2:-$UMBRA_DEVENV_ENVIRONMENT}
+    if [[ "$day" == "" ]]; then
+        echo "Which day?"
+        exit -2
+    fi
+    if [[ "$year" == "" ]]; then
+        echo "Which year?"
+        exit -2
+    fi
+
+    git_root=$(git rev-parse --show-toplevel)
+
+    cat "${git_root}/_template/src/aoc/days/Day1.cpp" \
+        | sed "s/2019/$year/g" \
+        | sed "s/Day1/Day$day/g" \
+        | tee "${git_root}/y$year/src/aoc/days/Day$day.cpp"
+    cat "${git_root}/_template/src/aoc/days/Day1.hpp" \
+        | sed "s/DECLARE_DAY(2019, 1)/DECLARE_DAY($year, $day)/" \
+        | sed "s/2019/$year/g" \
+        | sed "s/Day1/Day$day/g" \
+        | tee "${git_root}/y$year/src/aoc/days/Day$day.hpp"
+}
+
 helpme() {
     echo "Commands: run, tests, debug, callgrind, profile"
 }

@@ -135,7 +135,6 @@ uint64_t Day2::part1() {
 uint64_t Day2::part2() {
     uint64_t sum = 0;
     for (auto range : ranges) {
-        std::set<uint64_t> prefixes;
         for (uint64_t i = range.left;
             i <= range.right;
             ++i
