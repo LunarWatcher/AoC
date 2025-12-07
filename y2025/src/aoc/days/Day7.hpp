@@ -7,6 +7,10 @@
 
 namespace aoc2025 {
 
+struct Beam {
+    int64_t realities = 1;
+};
+
 struct Splitter {
     common::Vec2 pos;
     int64_t hits = 0;
@@ -25,6 +29,7 @@ public:
     DECLARE_DAY(2025, 7);
 
     void parse() override;
+    std::pair<uint64_t, uint64_t> solve();
     uint64_t part1() override;
     uint64_t part2() override;
 

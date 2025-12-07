@@ -10,4 +10,9 @@ TEST_CASE("Day 7, main test", "[D7][MainTest]") {
             d.part1() == 21
         );
     }
+    SECTION("Part 2") {
+        REQUIRE(
+            d.part2() == 40
+        );
+    }
 }

@@ -43,58 +43,48 @@ void Day7::parse() {
     }
 }
 
-uint64_t Day7::part1() {
-    std::queue<common::Vec2> lasers;
-    lasers.push(
-        common::Vec2 {
-            input.emitter.x,
-            // We start at -1 to force the first check to be at y = 0 in splitter line space
-            -1
-        }
-    );
+std::pair<uint64_t, uint64_t> Day7::solve() {
+    auto input = this->input;
 
-    uint64_t out = 0;
-    while (lasers.size()) {
-        auto head = lasers.front();
-        lasers.pop();
+    uint64_t splitCount = 0;
+    uint64_t combinedRealities = 0;
 
-        // The next hit may not be immediately on the next line
-        while (true) {
-            head.y += 1;
-            if (head.y >= (int64_t) input.splitters.size()) {
-                // Beam hit the end and cannot hit any more splitters
-                break;
-            }
+    std::unordered_map<int64_t, uint64_t> beams = {
+        {input.emitter.x, 1}
+    };
+    for (auto& splitters : input.splitters) {
+        std::unordered_map<int64_t, uint64_t> newBeams;
 
-            auto& m = input.splitters.at(head.y);
-            auto it = m.find(head.x);
-            if (it == m.end()) {
+
+        for (auto& [x, realities] : beams) {
+            auto splitter = splitters.find(x);
+            if (splitter == splitters.end()) {
+                newBeams[x] += realities;
                 continue;
             }
-            auto& [_, splitter] = *it;
-            if (splitter.hits != 0) {
-                break;
-            }
-            splitter.hits += 1;
-            ++out;
+            newBeams[x - 1] += realities;
+            newBeams[x + 1] += realities;
 
-            lasers.push({
-                splitter.pos.x + 1,
-                head.y
-            });
-            lasers.push({
-                splitter.pos.x - 1,
-                head.y
-            });
-            break;
+            if (++splitter->second.hits == 1) {
+                ++splitCount;
+            }
         }
+        beams = newBeams;
     }
 
-    return out;
+    for (auto& [_, realities] : beams) {
+        combinedRealities += realities;
+    }
+
+    return { splitCount, combinedRealities };
+}
+
+uint64_t Day7::part1() {
+    return solve().first;
 }
 
 uint64_t Day7::part2() {
-    return 0;
+    return solve().second;
 }
 
 }
