@@ -1,4 +1,5 @@
 #include "IntCode.hpp"
+#include <cmath>
 #include <string>
 #include <stdexcept>
 #include <iostream>
@@ -32,7 +33,12 @@ Opcode4 IntCode::resolveOp4(
     };
 }
 
+int64_t IntCode::resolveMode(int64_t rawOp, short parameterIdx) {
+    return rawOp / int64_t(std::pow<int64_t>(10, parameterIdx + 2)) % 10;
+}
+
 int64_t IntCode::run(
+    StdStream in,
     Program* inspect
 ) {
     // Create a copy of the workingSet instructions to keep a per-run state.
@@ -42,19 +48,69 @@ int64_t IntCode::run(
 
     bool running = true;
     while (running) {
-        auto op = ram.resolveImmediateMode(ptr);
+        auto rawOp = ram.resolveImmediateMode(ptr);
+        auto op = rawOp % 100;
 
         switch (op) {
         case 1: {
-            auto ops = resolveOp4(ram, ptr);
-            ram.at(ops.destAddr) = ops.val1 + ops.val2;
+            auto val1 = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
+            auto val2 = ram.resolve(resolveMode(rawOp, 1), ptr + 2);
+            auto dest = ram.resolveImmediateMode(ptr + 3);
+            ram.at(dest) = val1 + val2;
             ptr += 4;
         } break;
         case 2: {
-            auto ops = resolveOp4(ram, ptr);
-            ram.at(ops.destAddr) = ops.val1 * ops.val2;
+            auto val1 = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
+            auto val2 = ram.resolve(resolveMode(rawOp, 1), ptr + 2);
+            auto dest = ram.resolveImmediateMode(ptr + 3);
+            ram.at(dest) = val1 * val2;
             ptr += 4;
         } break;
+        case 3: {
+            auto dest = ram.resolveImmediateMode(ptr + 1);
+            ram.at(dest) = in.next();
+            ptr += 2;
+        } break;
+        case 4: {
+            auto value = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
+            this->output.push(value);
+            ptr += 2;
+        } break;
+
+        case 5: {
+            auto value = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
+            auto jumpTo = ram.resolve(resolveMode(rawOp, 1), ptr + 2);
+            if (value != 0) {
+                ptr = jumpTo;
+            } else {
+                ptr += 3;
+            }
+        } break;
+        case 6: {
+            auto value = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
+            auto jumpTo = ram.resolve(resolveMode(rawOp, 1), ptr + 2);
+            if (value == 0) {
+                ptr = jumpTo;
+            } else {
+                ptr += 3;
+            }
+        } break;
+
+        case 7: {
+            auto val1 = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
+            auto val2 = ram.resolve(resolveMode(rawOp, 1), ptr + 2);
+            auto dest = ram.resolveImmediateMode(ptr + 3);
+            ram.at(dest) = (int64_t) val1 < val2;
+            ptr += 4;
+        } break;
+        case 8: {
+            auto val1 = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
+            auto val2 = ram.resolve(resolveMode(rawOp, 1), ptr + 2);
+            auto dest = ram.resolveImmediateMode(ptr + 3);
+            ram.at(dest) = (int64_t) val1 == val2;
+            ptr += 4;
+        } break;
+
         case 99:
             // std::cout << "HALT" << std::endl;
             running = false;

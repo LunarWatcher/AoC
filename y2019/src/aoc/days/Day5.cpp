@@ -4,15 +4,21 @@
 namespace aoc2019 {
 
 void Day5::parse() {
-
+    this->computer = IntCode {
+        common::Loader::loadSingleLineIntVector<int64_t>(
+            this->path
+        )
+    };
 }
 
 uint64_t Day5::part1() {
-    return 0;
+    computer.run({ .data = { 1 } });
+    return computer.diagnostic();
 }
 
 uint64_t Day5::part2() {
-    return 0;
+    computer.run({ .data = { 5 } });
+    return computer.diagnostic();
 }
 
 }
