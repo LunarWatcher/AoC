@@ -9,8 +9,15 @@ struct Vec2 {
     int64_t x;
     int64_t y;
 
-    int64_t manhatten(Vec2 other = { 0, 0 }) {
+    int64_t manhatten(const Vec2& other = { 0, 0 }) const {
         return std::abs(x - other.x) + std::abs(y - other.y);
+    }
+
+    Vec2 operator-(const Vec2& other) const {
+        return Vec2 {
+            x - other.x,
+            y - other.y
+        };
     }
 };
 
@@ -24,7 +31,6 @@ struct Line {
     bool linearIntersect(
         const Line& other
     ) const {
-
         return (
             other.start.x > std::min(start.x, end.x)
             && other.end.x < std::max(start.x, end.x)

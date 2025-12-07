@@ -10,12 +10,13 @@ void Day3::parse() {
     );
 }
 
-std::unordered_map<WireDirection, std::vector<common::Line>> Day3::convertToWires(
+std::unordered_map<WireDirection, std::vector<LineWithPointData>> Day3::convertToWires(
     const std::vector<common::Loader::DirectionalInstruction>& instructions
 ) {
-    std::unordered_map<WireDirection, std::vector<common::Line>> wires;
+    std::unordered_map<WireDirection, std::vector<LineWithPointData>> wires;
     int64_t x = 0;
     int64_t y = 0;
+    int64_t traveled = 0;
 
     for (auto& wire : instructions) {
         // std::cout << wire.dir << wire.quantity << ",";
@@ -23,9 +24,10 @@ std::unordered_map<WireDirection, std::vector<common::Line>> Day3::convertToWire
         case 'U':
         case 'D': {
             int64_t dir = wire.dir == 'U' ? 1 : -1;
-            common::Line w {
+            LineWithPointData w {
                 .start = { x, y },
-                .end = { x, y + ((int64_t) wire.quantity) * dir }
+                .end = { x, y + ((int64_t) wire.quantity) * dir },
+                .traveledAtStart = traveled,
             };
             y = w.end.y;
 
@@ -35,9 +37,10 @@ std::unordered_map<WireDirection, std::vector<common::Line>> Day3::convertToWire
         case 'L':
         case 'R': {
             int dir = wire.dir == 'R' ? 1 : -1;
-            common::Line w {
+            LineWithPointData w {
                 .start = { x, y },
-                .end = { x + ((int64_t) wire.quantity) * dir, y }
+                .end = { x + ((int64_t) wire.quantity) * dir, y },
+                .traveledAtStart = traveled,
             };
             x = w.end.x;
 
@@ -47,8 +50,9 @@ std::unordered_map<WireDirection, std::vector<common::Line>> Day3::convertToWire
         default:
             throw std::runtime_error("Unrecognised direction");
         }
+
+        traveled += (int64_t) wire.quantity;
     }
-    std::cout << std::endl;
 
     return wires;
 }
@@ -91,7 +95,44 @@ uint64_t Day3::part1() {
 }
 
 uint64_t Day3::part2() {
-    return 0;
+    auto w1 = convertToWires(this->wires.at(0));
+    auto w2 = convertToWires(this->wires.at(1));
+
+    std::pair<common::Vec2, int64_t> nearestIntersect = {{0,0}, 99999999ll};
+    for (auto& [dir, wires] : w1) {
+        auto intersectingDir = opposite(dir);
+        auto& opposingWires = w2.at(intersectingDir);
+
+        for (auto& wire : wires) {
+            for (auto& crossingWire : opposingWires) {
+                if (wire.linearIntersect(crossingWire)) {
+                    common::Vec2 intersect;
+                    int64_t dist = wire.traveledAtStart + crossingWire.traveledAtStart;
+                    if (dir == WireDirection::HORIZONTAL) {
+                        intersect = {
+                            .x = crossingWire.start.x,
+                            .y = wire.start.y
+                        };
+                    } else {
+                        intersect = {
+                            .x = wire.start.x,
+                            .y = crossingWire.start.y
+                        };
+                    }
+
+                    dist += (wire.start - intersect).manhatten();
+                    dist += (crossingWire.start - intersect).manhatten();
+
+                    if (dist < nearestIntersect.second) {
+                        nearestIntersect = { intersect, dist };
+                    }
+
+                }
+            }
+        }
+    }
+
+    return nearestIntersect.second;
 }
 
 }
