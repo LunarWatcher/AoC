@@ -24,7 +24,7 @@ callgrind() {
         echo "  profile tests"
         exit -2
     fi
- on kernel 6.14 due to an upstream bug, so it has not been tested
+
     make -j $(nproc) "${1:-aoc}-${UMBRA_DEVENV_ENVIRONMENT}"
     valgrind --tool=callgrind --callgrind-out-file=callgrind-out -- "./bin/${1:-aoc}-${UMBRA_DEVENV_ENVIRONMENT}" $@
     callgrind_annotate callgrind-out | less
@@ -43,6 +43,10 @@ profile() {
 
     make -j $(nproc) "${1:-aoc}-${UMBRA_DEVENV_ENVIRONMENT}"
     perf -- "./bin/${1:-aoc}-${UMBRA_DEVENV_ENVIRONMENT}" $@
+}
+
+helpme() {
+    echo "Commands: run, tests, debug, callgrind, profile"
 }
 
 # vim:ft=bash
