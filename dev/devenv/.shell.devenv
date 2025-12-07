@@ -71,7 +71,7 @@ createday() {
 }
 
 helpme() {
-    echo "Commands: run, tests, debug, callgrind, profile"
+    echo "Commands: run, tests, debug, callgrind, profile, createday"
 }
 
 # vim:ft=bash

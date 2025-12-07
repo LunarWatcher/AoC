@@ -20,6 +20,7 @@ struct Range {
     uint64_t left;
     uint64_t right;
 
+    Range(): left(0), right(0) {  }
     Range(const std::string& range) {
         left = std::stoull(range.substr(0, range.find('-')));
         right = std::stoull(range.substr(range.find('-') + 1));
