@@ -14,8 +14,8 @@ using Clock = std::chrono::high_resolution_clock;
 
 struct GetColourFor {
     double time;
-
 };
+
 inline std::ostream& operator<<(std::ostream& ss, const GetColourFor& v) {
     auto time = v.time;
     if (time < 10) {
@@ -32,7 +32,18 @@ inline std::ostream& operator<<(std::ostream& ss, const GetColourFor& v) {
     return ss;
 }
 
-void runPart(int day, bool partB, double parseTime, std::function<int64_t()> runner);
+struct CombinedPartTimes {
+    char identifier;
+
+    double partTimes;
+    double parseTimes;
+
+    double total() const { return partTimes + parseTimes; }
+};
+
+extern std::ostream& operator<<(std::ostream& ss, const CombinedPartTimes& v);
+
+double runPart(int day, bool partB, double parseTime, std::function<int64_t()> runner);
 
 void run(int argc, const char* argv[], const DayList& implementedDays);
 
