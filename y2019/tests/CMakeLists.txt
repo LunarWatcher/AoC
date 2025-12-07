@@ -1,6 +1,7 @@
 add_executable(tests-2019
     src/Day1Tests.cpp
     src/Day2Tests.cpp
+    src/Day3Tests.cpp
 
     src/IntCodeTests.cpp
 

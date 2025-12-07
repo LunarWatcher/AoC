@@ -26,6 +26,18 @@ struct Range {
     }
 };
 
+struct DirectionalInstruction {
+    char dir;
+    uint64_t quantity;
+
+    DirectionalInstruction(const std::string& dir) {
+        this->dir = dir[0];
+        this->quantity = std::stoull(
+            dir.substr(1)
+        );
+    }
+};
+
 struct IntStream {
     std::vector<int64_t> data;
 
@@ -43,6 +55,7 @@ T naiveLoader(const std::string& line) {
 
 constexpr inline auto RangeLoader = naiveLoader<Range>;
 constexpr inline auto IntStreamLoader = naiveLoader<IntStream>;
+constexpr inline auto DirectionalInstructionLoader = naiveLoader<DirectionalInstruction>;
 
 template <typename T>
 std::vector<T> loadVector(const std::filesystem::path& input, std::function<T(const std::string& line)> parser) {
@@ -165,6 +178,35 @@ inline std::vector<std::string> getRawLinesForProcessing(
     }
     return out;
 
+}
+
+template <typename T>
+std::vector<std::vector<T>> loadCommaSeparatedLines(
+    const std::filesystem::path& input,
+    std::function<T(const std::string&)> parser
+) {
+    std::ifstream f(input);
+    if (!f) {
+        throw std::runtime_error("Failed to find " + input.string());
+    }
+
+    std::vector<std::vector<T>> out;
+    std::string buff;
+    while (std::getline(f, buff)) {
+        std::vector<T> intermediate;
+        std::stringstream ss;
+        ss << buff;
+
+        std::string sb;
+        while (std::getline(ss, sb, ',')) {
+            intermediate.push_back(
+                parser(sb)
+            );
+        }
+
+        out.push_back(intermediate);
+    }
+    return out;
 }
 
 template <typename T>
