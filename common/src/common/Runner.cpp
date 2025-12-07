@@ -13,7 +13,7 @@ double Runner::runPart(int day, bool partB, double parseTime, std::function<int6
     auto partTime = std::chrono::duration<double, std::milli>(end - start)
         .count();
 
-    std::cout << "Day " << std::format("{:>2}", day) << ", part " << (partB ? "B" : "A")
+    std::cerr << "Day " << std::format("{:>2}", day) << ", part " << (partB ? "B" : "A")
         << " ("
             << GetColourFor{parseTime}
             << std::format("{:>15.15}", parseTime)
@@ -57,7 +57,7 @@ void Runner::run(
         argv + 1, argv + argc
     };
 
-    std::cout
+    std::cerr
         << stc::colour::use<stc::colour::Typography::BOLD>
         // Total width: 16 (up to first paren) + 17 (first col) + 3 (" + ")
         // + 17 (second col) + 3 ("): ") + 17 (reserved by the totals col; agian 15 + 2)
@@ -97,7 +97,7 @@ void Runner::run(
         });
     }
 
-    std::cout
+    std::cerr
         << "\n" 
         << partA
         << partB;
