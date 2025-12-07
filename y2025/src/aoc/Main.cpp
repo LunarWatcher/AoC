@@ -10,7 +10,7 @@
 
 int main(int argc, const char* argv[]) {
     using namespace aoc2025;
-    common::Runner::run(argc, argv, {
+    common::Runner::run(argc, argv, 2025, {
         std::make_shared<Day1>(),
         std::make_shared<Day2>(),
         std::make_shared<Day3>(),

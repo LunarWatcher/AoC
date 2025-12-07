@@ -45,6 +45,11 @@ extern std::ostream& operator<<(std::ostream& ss, const CombinedPartTimes& v);
 
 double runPart(int day, bool partB, double parseTime, std::function<int64_t()> runner);
 
-void run(int argc, const char* argv[], const DayList& implementedDays);
+void run(
+    int argc,
+    const char* argv[],
+    int year, 
+    const DayList& implementedDays
+);
 
 }
