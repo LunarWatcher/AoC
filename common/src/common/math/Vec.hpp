@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <cstdlib>
 namespace common {
@@ -18,6 +19,18 @@ struct Vec2 {
             x - other.x,
             y - other.y
         };
+    }
+};
+
+struct Vec3 {
+    int64_t x, y, z;
+
+    int64_t euclidiean(const Vec3& other = { 0, 0, 0 }) const {
+        return (int64_t) std::sqrt(
+            std::pow(x - other.x, 2)
+            + std::pow(y - other.y, 2)
+            + std::pow(z - other.z, 2)
+        );
     }
 };
 
