@@ -24,7 +24,7 @@ void Day8::parse() {
 uint64_t Day8::part1() {
     auto boxes = this->boxes;
     std::map<std::pair<int64_t, int64_t>, std::tuple<Box*, Box*, int64_t>> links;
-    for (size_t i = 0; i < boxes.size(); ++i) {
+    for (size_t i = 0; i < boxes.size() - 1; ++i) {
         auto& box = boxes.at(i);
 
         for (size_t j = 0; j < boxes.size(); ++j) {
@@ -59,14 +59,14 @@ uint64_t Day8::part1() {
         }
     );
 
-    for (size_t i = 0; i < boxes.size() / 2; ++i) {
+    for (size_t i = 0; i < boxes.size(); ++i) {
         auto& [a, b, d] = shortestLinks.at(i);
-        // std::cout << "IN: "
-        //     << a->pos.x << "," << a->pos.y << "," << a->pos.z
-        //     << " --> "
-        //     << b->pos.x << "," << b->pos.y << "," << b->pos.z
-        //     << "/ " << d
-        //     << std::endl;
+        std::cout << "IN: "
+            << a->pos.x << "," << a->pos.y << "," << a->pos.z
+            << " --> "
+            << b->pos.x << "," << b->pos.y << "," << b->pos.z
+            << "/ " << d
+            << std::endl;
         a->links.push_back(b);
         b->links.push_back(a);
     }
@@ -117,6 +117,12 @@ uint64_t Day8::part1() {
             return a.size() > b.size(); 
         }
     );
+
+    for (size_t i = 0; i < 3; ++i) {
+        for (auto& circuit : circuits.at(i)) {
+            // std::cout << "\t" << circuit.x << "," << circuit.y << "," << circuit.z << std::endl;
+        }
+    }
 
     return circuits.at(0).size()
         * circuits.at(1).size()

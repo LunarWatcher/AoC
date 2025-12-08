@@ -27,9 +27,9 @@ struct Vec3 {
 
     int64_t euclidiean(const Vec3& other = { 0, 0, 0 }) const {
         return (int64_t) std::sqrt(
-            std::pow(x - other.x, 2)
-            + std::pow(y - other.y, 2)
-            + std::pow(z - other.z, 2)
+            (int64_t) std::pow(other.x - x, 2)
+            + (int64_t) std::pow(other.y - y, 2)
+            + (int64_t) std::pow(other.z - z, 2)
         );
     }
 };
