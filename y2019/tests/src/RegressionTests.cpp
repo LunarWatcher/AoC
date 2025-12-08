@@ -7,6 +7,7 @@
 #include "aoc/days/Day5.hpp"
 #include "aoc/days/Day6.hpp"
 #include "aoc/days/Day7.hpp"
+#include "aoc/days/Day8.hpp"
 
 using namespace aoc2019;
 
@@ -58,4 +59,25 @@ TEST_CASE("Day 7", "[Regression]") {
     d.parse();
     REQUIRE(std::get<int64_t>(d.part1()) == 22012);
     REQUIRE(std::get<int64_t>(d.part2()) == 4039164ll);
+}
+
+TEST_CASE("Day 8", "[Regression]") {
+    Day8 d;
+    d.parse();
+    SECTION("Parsing") {
+        REQUIRE(d.images.size() == 100);
+    }
+    SECTION("Part 1") {
+        REQUIRE(std::get<uint64_t>(d.part1()) == 1206);
+    }
+    SECTION("Part 2") {
+        REQUIRE(std::get<std::string>(d.part2()) == R"(
+####...##.###...##..###..
+#.......#.#..#.#..#.#..#.
+###.....#.#..#.#....#..#.
+#.......#.###..#.##.###..
+#....#..#.#.#..#..#.#....
+####..##..#..#..###.#....
+)");
+    }
 }
