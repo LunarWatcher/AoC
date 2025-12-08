@@ -13,3 +13,5 @@ target_link_libraries(
 PUBLIC
     stc::stc
 )
+
+add_subdirectory(tests)

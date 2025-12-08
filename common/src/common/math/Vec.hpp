@@ -26,10 +26,11 @@ struct Vec3 {
     int64_t x, y, z;
 
     int64_t euclidiean(const Vec3& other = { 0, 0, 0 }) const {
+        auto dx = other.x - x;
+        auto dy = other.y - y;
+        auto dz = other.z - z;
         return (int64_t) std::sqrt(
-            (int64_t) std::pow(other.x - x, 2)
-            + (int64_t) std::pow(other.y - y, 2)
-            + (int64_t) std::pow(other.z - z, 2)
+            dx * dx + dy * dy + dz * dz
         );
     }
 };

@@ -63,4 +63,5 @@ TEST_CASE("Day 8 regression tests", "[Regression]") {
     Day8 d;
     d.parse();
     REQUIRE(d.part1() == 181584);
+    REQUIRE(d.part2() == 8465902405);
 }

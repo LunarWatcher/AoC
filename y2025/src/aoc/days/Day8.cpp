@@ -1,8 +1,8 @@
 #include "Day8.hpp"
+#include "common/data/DisjointSet.hpp"
 #include "common/loader/Loader.hpp"
 #include "common/math/Vec.hpp"
 #include "stc/StringUtil.hpp"
-#include <limits>
 #include <map>
 #include <queue>
 
@@ -23,114 +23,79 @@ void Day8::parse() {
 
 uint64_t Day8::part1() {
     auto boxes = this->boxes;
-    std::map<std::pair<int64_t, int64_t>, std::tuple<Box*, Box*, int64_t>> links;
+
+    std::vector<std::tuple<size_t, size_t, uint64_t>> lines;
+    lines.reserve(boxes.size() * boxes.size());
+
     for (size_t i = 0; i < boxes.size() - 1; ++i) {
         auto& box = boxes.at(i);
-
-        for (size_t j = 0; j < boxes.size(); ++j) {
-            if (i == j) continue;
-            auto& box2 = boxes.at(j);
-
-            auto dist = box.pos.euclidiean(box2.pos);
-
-            // if {minbox, box, mindist} in list, the inverse link has already been established.
-            // The two notes are mutually closest to each other. Skip the link
-            if (!links.contains({j, i})) {
-                links[{i, j}] = {
-                    &box, &box2, dist
-                };
-            }
+        for (size_t j = i + 1; j < boxes.size(); ++j) {
+            lines.push_back({ i, j, box.pos.euclidiean(boxes.at(j).pos) });
         }
-
     }
 
-    std::vector<std::tuple<Box*, Box*, int64_t>> shortestLinks;
+    // TODO: this accounts for the majority of the time spent
+    std::sort(lines.begin(), lines.end(), [](const auto& a, const auto& b) {
+        return std::get<2>(a) < std::get<2>(b); 
+    });
 
-    shortestLinks.reserve(links.size());
-    for (auto& [_, link] : links) {
-        shortestLinks.push_back(link);
-    }
-
-    std::sort(
-        shortestLinks.begin(),
-        shortestLinks.end(),
-        [](const auto& a, const auto& b) {
-            return std::get<2>(a) < std::get<2>(b); 
-        }
-    );
+    common::DisjointSet<uint64_t> dsu(boxes.size());
 
     for (size_t i = 0; i < this->pairs; ++i) {
-        auto& [a, b, d] = shortestLinks.at(i);
-        // std::cout << "IN: "
-        //     << a->pos.x << "," << a->pos.y << "," << a->pos.z
-        //     << " --> "
-        //     << b->pos.x << "," << b->pos.y << "," << b->pos.z
-        //     << "/ " << d
-        //     << std::endl;
-        a->links.push_back(b);
-        b->links.push_back(a);
+        auto [b1, b2, _] = lines.at(i);
+        // std::cout << "LINK NODE " << b1 << " TO " << b2 << std::endl;
+        dsu.link(b1, b2);
     }
 
-    std::vector<std::vector<common::Vec3>> circuits;
-
-    for (auto& box : boxes) {
-        if (box.consumed) {
-            continue;
+    std::priority_queue<uint64_t> q;
+    for (size_t i = 0; i < boxes.size(); ++i) {
+        // Only push one size per cluster
+        if (dsu.parent.at(i) == i) {
+            q.push(dsu.sizes.at(i));
         }
-        std::vector<common::Vec3> circuit {
-            box.pos
-        };
-        box.consumed = true;
-        std::queue q(box.links.begin(), box.links.end());
-
-        // std::cout << "Root: " << box.pos.x << ", " << box.pos.y << ", " << box.pos.z << std::endl;
-
-        while (q.size()) {
-            auto* b = q.front();
-            q.pop();
-            
-            // std::cout << "\tNext: " << b->pos.x << "," << b->pos.y << "," << b->pos.z << std::endl;
-
-            if (b->consumed) {
-                continue;
-            }
-
-            b->consumed = true;
-            circuit.push_back(b->pos);
-
-            for (auto link : b->links) {
-                if (link->consumed) {
-                    continue;
-                }
-
-                q.push(link);
-            }
-        }
-
-        circuits.push_back(circuit);
     }
 
-    std::sort(
-        circuits.begin(),
-        circuits.end(),
-        [](const auto& a, const auto& b) {
-            return a.size() > b.size(); 
-        }
-    );
+    uint64_t out = 1;
 
     for (size_t i = 0; i < 3; ++i) {
-        for (auto& circuit : circuits.at(i)) {
-            // std::cout << "\t" << circuit.x << "," << circuit.y << "," << circuit.z << std::endl;
-        }
+        out *= q.top();
+        q.pop();
     }
 
-    return circuits.at(0).size()
-        * circuits.at(1).size()
-        * circuits.at(2).size();
+    return out;
 }
 
 uint64_t Day8::part2() {
-    return 0;
+    auto boxes = this->boxes;
+
+    std::vector<std::tuple<size_t, size_t, uint64_t>> lines;
+    lines.reserve(boxes.size() * boxes.size());
+
+    for (size_t i = 0; i < boxes.size() - 1; ++i) {
+        auto& box = boxes.at(i);
+        for (size_t j = i + 1; j < boxes.size(); ++j) {
+            lines.push_back({ i, j, box.pos.euclidiean(boxes.at(j).pos) });
+        }
+    }
+
+    // TODO: this accounts for the majority of the time spent
+    std::sort(lines.begin(), lines.end(), [](const auto& a, const auto& b) {
+        return std::get<2>(a) < std::get<2>(b); 
+    });
+
+    common::DisjointSet<uint64_t> dsu(boxes.size());
+
+    std::tuple<size_t, size_t, uint64_t> curr;
+    size_t i = 0;
+    while (dsu.remaining > 1) {
+        curr = lines.at(i++);
+        auto [b1, b2, _] = curr;
+        // std::cout << "LINK NODE " << b1 << " TO " << b2 << std::endl;
+        dsu.link(b1, b2);
+    }
+
+    return boxes.at(std::get<0>(curr)).pos.x
+        * boxes.at(std::get<1>(curr)).pos.x;
 }
 
 }

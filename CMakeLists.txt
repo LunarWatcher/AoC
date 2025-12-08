@@ -39,4 +39,8 @@ add_custom_target(test
     COMMAND tests-2025
     DEPENDS tests-2025
     COMMENT "Test AoC (latest; 2025)")
+add_custom_target(test-common
+    COMMAND tests-common
+    DEPENDS tests-common
+    COMMENT "Test commons")
 # vim:ft=cmake

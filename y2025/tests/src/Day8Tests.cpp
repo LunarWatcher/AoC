@@ -10,5 +10,9 @@ TEST_CASE("Test 1", "[D8]") {
             d.part1() == 40
         );
     }
-
+    SECTION("Part 2") {
+        REQUIRE(
+            d.part2() == 25272
+        );
+    }
 }

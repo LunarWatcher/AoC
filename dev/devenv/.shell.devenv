@@ -1,15 +1,15 @@
 run() {
-    make -j $(nproc) "aoc-${UMBRA_DEVENV_ENVIRONMENT}"
+    make -j $(nproc) "aoc-${UMBRA_DEVENV_ENVIRONMENT}" || return -1
     "./bin/aoc-${UMBRA_DEVENV_ENVIRONMENT}" $@
 }
 
 tests() {
-    make -j $(nproc) "tests-${UMBRA_DEVENV_ENVIRONMENT}"
+    make -j $(nproc) "tests-${UMBRA_DEVENV_ENVIRONMENT}" || return -1
     "./bin/tests-${UMBRA_DEVENV_ENVIRONMENT}" $@
 }
 
 debug() {
-    make -j $(nproc) "tests-${UMBRA_DEVENV_ENVIRONMENT}"
+    make -j $(nproc) "tests-${UMBRA_DEVENV_ENVIRONMENT}" || return -1
     gdb "./bin/tests-${UMBRA_DEVENV_ENVIRONMENT}" 
 }
 
