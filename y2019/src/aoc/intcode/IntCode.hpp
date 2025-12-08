@@ -16,6 +16,8 @@ struct Opcode4 {
 struct Program {
     std::vector<int64_t> ram;
 
+    size_t ptr = 0;
+
     int64_t resolveReference(
         size_t addr
     ) const {
@@ -62,8 +64,11 @@ private:
         const Program& ram,
         size_t opcodeAddr
     );
+
+    bool halted = false;
 public:
     StdStream output;
+    bool cacheWorkingMemory = false;
 
     /**
      * Represents the source instructions.
@@ -78,6 +83,7 @@ public:
 
     IntCode() = default;
     IntCode(const std::vector<int64_t>& instructions);
+
 
     int64_t resolveReference(const Program& ram, size_t addr);
     int64_t resolveImmediateMode(const Program& ram, size_t addr);
@@ -94,13 +100,23 @@ public:
     );
 
     int64_t run(
-        StdStream in = {},
+        StdStream* in = nullptr,
+        Program* inspect = nullptr
+    );
+
+    int64_t runUntilHalted(
+        StdStream* in = nullptr,
         Program* inspect = nullptr
     );
 
     int64_t diagnostic() {
+        if (output.data.empty()) {
+            throw std::runtime_error("Diagnostics requested when nothing has been output");
+        }
         return output.data.back();
     }
+
+    bool hasHalted() { return halted; }
 };
 
 }

@@ -19,6 +19,8 @@ void IntCode::recode(
     for (const auto& [pos, val] : modifications) {
         workingSet.ram.at(pos) = val;
     }
+
+    this->halted = false;
 }
 
 Opcode4 IntCode::resolveOp4(
@@ -38,13 +40,25 @@ int64_t IntCode::resolveMode(int64_t rawOp, short parameterIdx) {
 }
 
 int64_t IntCode::run(
-    StdStream in,
+    StdStream* in,
     Program* inspect
 ) {
-    // Create a copy of the workingSet instructions to keep a per-run state.
-    auto ram = workingSet;
+    // output.data.clear();
 
-    size_t ptr = 0;
+    if (cacheWorkingMemory) {
+        if (inspect == nullptr) {
+            throw std::runtime_error("Bad girl 2");
+        }
+
+        if (inspect->ram.size() == 0) {
+            *inspect = workingSet;
+        }
+    }
+
+    // Create a copy of the workingSet instructions to keep a per-run state.
+    auto& ram = cacheWorkingMemory ? *inspect : workingSet;
+
+    auto& ptr = ram.ptr;
 
     bool running = true;
     while (running) {
@@ -68,13 +82,17 @@ int64_t IntCode::run(
         } break;
         case 3: {
             auto dest = ram.resolveImmediateMode(ptr + 1);
-            ram.at(dest) = in.next();
+            if (in == nullptr) {
+                throw std::runtime_error("Bad girl");
+            }
+            ram.at(dest) = in->next();
             ptr += 2;
         } break;
         case 4: {
             auto value = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
             this->output.push(value);
             ptr += 2;
+            running = false;
         } break;
 
         case 5: {
@@ -114,6 +132,7 @@ int64_t IntCode::run(
         case 99:
             // std::cout << "HALT" << std::endl;
             running = false;
+            this->halted = true;
             break;
         default:
             [[unlikely]]
@@ -121,11 +140,22 @@ int64_t IntCode::run(
         }
     }
 
-    if (inspect != nullptr) {
-        *inspect = ram;
-    }
+    // if (inspect != nullptr) {
+    //     *inspect = ram;
+    // }
 
     return ram.at(0);
+}
+
+int64_t IntCode::runUntilHalted(
+    StdStream* in,
+    Program* inspect
+) {
+    int64_t out;
+    while (!halted) {
+        out = run(in, inspect);
+    }
+    return out;
 }
 
 }

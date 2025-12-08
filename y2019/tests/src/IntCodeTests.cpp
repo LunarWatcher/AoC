@@ -49,7 +49,8 @@ TEST_CASE("Day 5 part 2 features", "[IntCode]") {
     };
 
     SECTION("Value < 8") {
-        computer.run({{ 5 }});
+        aoc2019::StdStream s {{ 5 }};
+        computer.run(&s);
         REQUIRE(computer.diagnostic() == 999);
     }
 }
