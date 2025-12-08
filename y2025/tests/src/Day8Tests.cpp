@@ -2,7 +2,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Test 1", "[D8]") {
-    aoc2025::Day8 d{"test/day8.1.txt"};
+    aoc2025::Day8 d{"test/day8.1.txt", 10};
     d.parse();
 
     SECTION("Part 1") {

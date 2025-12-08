@@ -27,5 +27,8 @@ public:
         \
     } \
     int day() override { return DayNum; }
+#define DECLARE_CONSTRUCTOR(Year, DayNum, ...) \
+    int day() override { return DayNum; } \
+    Day##DayNum(const std::string& filename = "day" #DayNum ".txt", __VA_ARGS__): Day(Year, filename)
 
 }

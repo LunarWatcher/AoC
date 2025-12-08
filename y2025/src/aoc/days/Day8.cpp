@@ -59,14 +59,14 @@ uint64_t Day8::part1() {
         }
     );
 
-    for (size_t i = 0; i < boxes.size(); ++i) {
+    for (size_t i = 0; i < this->pairs; ++i) {
         auto& [a, b, d] = shortestLinks.at(i);
-        std::cout << "IN: "
-            << a->pos.x << "," << a->pos.y << "," << a->pos.z
-            << " --> "
-            << b->pos.x << "," << b->pos.y << "," << b->pos.z
-            << "/ " << d
-            << std::endl;
+        // std::cout << "IN: "
+        //     << a->pos.x << "," << a->pos.y << "," << a->pos.z
+        //     << " --> "
+        //     << b->pos.x << "," << b->pos.y << "," << b->pos.z
+        //     << "/ " << d
+        //     << std::endl;
         a->links.push_back(b);
         b->links.push_back(a);
     }

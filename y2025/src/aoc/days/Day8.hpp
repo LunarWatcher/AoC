@@ -16,8 +16,9 @@ struct Box {
 class Day8 : public common::Day {
 public:
     std::vector<Box> boxes;
+    size_t pairs;
 
-    DECLARE_DAY(2025, 8);
+    DECLARE_CONSTRUCTOR(2025, 8, size_t pairs = 1000), pairs(pairs) {}
 
     void parse() override;
     uint64_t part1() override;
