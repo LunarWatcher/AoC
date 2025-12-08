@@ -12,10 +12,10 @@ TEST_CASE("Day 4 edge test case 1", "[D4]") {
     }
 
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 1);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 1);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 0);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 0);
     }
 }
 
@@ -24,10 +24,10 @@ TEST_CASE("Day 4 edge test case 2", "[D4]") {
     d.parse();
 
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 1);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 1);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 0);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 0);
     }
 }
 
@@ -36,10 +36,10 @@ TEST_CASE("Day 4 edge test case 3", "[D4]") {
     d.parse();
 
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 1);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 1);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 1);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 1);
     }
 }
 
@@ -48,9 +48,9 @@ TEST_CASE("Day 4 edge test case 4", "[D4]") {
     d.parse();
 
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 1);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 1);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 1);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 1);
     }
 }

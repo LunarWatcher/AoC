@@ -7,12 +7,12 @@ TEST_CASE("Day 7, main test", "[D7][MainTest]") {
 
     SECTION("Part 1") {
         REQUIRE(
-            d.part1() == 21
+            std::get<uint64_t>(d.part1()) == 21
         );
     }
     SECTION("Part 2") {
         REQUIRE(
-            d.part2() == 40
+            std::get<uint64_t>(d.part2()) == 40
         );
     }
 }

@@ -10,9 +10,9 @@ void Day1::parse() {
     );
 }
 
-uint64_t Day1::part1() {
+common::Output Day1::part1() {
     int ptr = 50;
-    int zeroes = 0;
+    uint64_t zeroes = 0;
 
     for (const auto& dial : dials) {
         ptr += dial.op * dial.value;
@@ -29,9 +29,9 @@ uint64_t Day1::part1() {
     return zeroes;
 }
 
-uint64_t Day1::part2() {
+common::Output Day1::part2() {
     int ptr = 50;
-    int zeroes = 0;
+    uint64_t zeroes = 0;
 
     for (const auto& dial : dials) {
         int old_ptr = ptr;

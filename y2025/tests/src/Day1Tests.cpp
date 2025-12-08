@@ -26,10 +26,10 @@ TEST_CASE("Day 1", "[D1]") {
         }
     }
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 3);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 3);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 6);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 6);
     }
 }
 
@@ -37,10 +37,10 @@ TEST_CASE("Day 1, input 2", "[D1]") {
     aoc2025::Day1 d("test/day1.2.txt");
     d.parse();
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 1);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 1);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 1);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 1);
     }
 }
 
@@ -48,10 +48,10 @@ TEST_CASE("Day 1, input 3", "[D1]") {
     aoc2025::Day1 d("test/day1.3.txt");
     d.parse();
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 2);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 2);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 2);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 2);
     }
 }
 
@@ -59,10 +59,10 @@ TEST_CASE("Day 1, input 4", "[D1]") {
     aoc2025::Day1 d("test/day1.4.txt");
     d.parse();
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 2);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 2);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 2);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 2);
     }
 }
 

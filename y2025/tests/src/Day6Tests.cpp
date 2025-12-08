@@ -11,9 +11,9 @@ TEST_CASE("Day 6, main test", "[D6][MainTest]") {
     }
 
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 4277556);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 4277556);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 3263827);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 3263827);
     }
 }

@@ -16,9 +16,9 @@ TEST_CASE("Day 3", "[D3][MainTest]") {
         REQUIRE(d.calculateBank(d.banks.at(2).data, 2) == std::vector<int64_t>{7, 8});
         REQUIRE(d.calculateBank(d.banks.at(3).data, 2) == std::vector<int64_t>{9, 2});
 
-        REQUIRE(d.part1() == 357);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 357);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 3121910778619);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 3121910778619);
     }
 }

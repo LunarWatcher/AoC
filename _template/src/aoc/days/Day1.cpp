@@ -7,11 +7,11 @@ void Day1::parse() {
 
 }
 
-uint64_t Day1::part1() {
+common::Output Day1::part1() {
     return 0;
 }
 
-uint64_t Day1::part2() {
+common::Output Day1::part2() {
     return 0;
 }
 

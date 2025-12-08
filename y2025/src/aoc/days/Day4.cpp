@@ -76,12 +76,12 @@ out:;
     return markedForDeathInCycle;
 }
 
-uint64_t Day4::part1() {
+common::Output Day4::part1() {
     auto map = this->map;
     return checkRemovable(map, false);
 }
 
-uint64_t Day4::part2() {
+common::Output Day4::part2() {
     auto map = this->map;
     uint64_t sum = 0;
     int cycle = 0;

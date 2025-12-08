@@ -15,7 +15,7 @@ void Day2::parse() {
     );
 }
 
-uint64_t Day2::part1() {
+common::Output Day2::part1() {
     uint64_t sum = 0;
     for (auto range : ranges) {
         std::string start = std::to_string(range.left);
@@ -132,7 +132,7 @@ uint64_t Day2::part1() {
     return sum;
 }
 
-uint64_t Day2::part2() {
+common::Output Day2::part2() {
     uint64_t sum = 0;
     for (auto range : ranges) {
         for (uint64_t i = range.left;

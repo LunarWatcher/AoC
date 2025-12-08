@@ -9,9 +9,9 @@ TEST_CASE("Day 5, main test case", "[D5][MainTest]") {
     d.parse();
 
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 3);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 3);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 14);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 14);
     }
 }

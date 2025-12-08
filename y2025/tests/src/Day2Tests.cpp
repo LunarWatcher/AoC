@@ -8,10 +8,10 @@ TEST_CASE("Day 2, test case", "[D2][MainTest]") {
         REQUIRE(d.ranges.size() == 11);
     }
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 1227775554ll);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 1227775554ll);
     }
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 4174379265ll);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 4174379265ll);
     }
 }
 
@@ -26,11 +26,11 @@ TEST_CASE("Day 2, test case 2", "[D2][Quick]") {
     }
 
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 99); // Control
+        REQUIRE(std::get<uint64_t>(d.part1()) == 99); // Control
     }
 
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 99 + 111);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 99 + 111);
     }
 
 

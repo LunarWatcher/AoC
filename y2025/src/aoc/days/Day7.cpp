@@ -79,11 +79,11 @@ std::pair<uint64_t, uint64_t> Day7::solve() {
     return { splitCount, combinedRealities };
 }
 
-uint64_t Day7::part1() {
+common::Output Day7::part1() {
     return solve().first;
 }
 
-uint64_t Day7::part2() {
+common::Output Day7::part2() {
     return solve().second;
 }
 

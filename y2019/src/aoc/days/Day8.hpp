@@ -4,10 +4,10 @@
 
 namespace aoc2019 {
 
-class Day1 : public common::Day {
+class Day8 : public common::Day {
 public:
 
-    DECLARE_DAY(2019, 1);
+    DECLARE_DAY(2019, 8);
 
     void parse() override;
     common::Output part1() override;

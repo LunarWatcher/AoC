@@ -7,6 +7,6 @@ TEST_CASE("Day 7 test case 1") {
     d.parse();
 
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 139629729);
+        REQUIRE(std::get<int64_t>(d.part2()) == 139629729);
     }
 }

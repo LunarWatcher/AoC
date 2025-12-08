@@ -11,7 +11,7 @@ void Day1::parse() {
     );
 }
 
-uint64_t Day1::part1() {
+common::Output Day1::part1() {
     uint64_t sum = 0;
     for (auto mass : masses) {
         sum += (uint64_t) std::floor((double) mass / 3.0) - 2;
@@ -19,13 +19,13 @@ uint64_t Day1::part1() {
     return sum;
 }
 
-uint64_t Day1::part2() {
+common::Output Day1::part2() {
     std::deque<uint64_t> q{
         masses.begin(),
         masses.end()
     };
 
-    int64_t sum = 0;
+    uint64_t sum = 0;
     while (q.size()) {
         auto mass = q.front();
         q.pop_front();

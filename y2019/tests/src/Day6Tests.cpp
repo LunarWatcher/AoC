@@ -10,10 +10,10 @@ TEST_CASE("Day 6 test case 1", "[D6]") {
     }
 
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 54);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 54);
     }
 
     SECTION("Part 2") {
-        REQUIRE(d.part2() == 4);
+        REQUIRE(std::get<uint64_t>(d.part2()) == 4);
     }
 }

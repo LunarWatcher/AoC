@@ -21,7 +21,7 @@ void Day8::parse() {
 
 }
 
-uint64_t Day8::part1() {
+common::Output Day8::part1() {
     auto boxes = this->boxes;
 
     std::vector<std::tuple<size_t, size_t, uint64_t>> lines;
@@ -65,7 +65,7 @@ uint64_t Day8::part1() {
     return out;
 }
 
-uint64_t Day8::part2() {
+common::Output Day8::part2() {
     auto boxes = this->boxes;
 
     std::vector<std::tuple<size_t, size_t, uint64_t>> lines;
@@ -94,7 +94,7 @@ uint64_t Day8::part2() {
         dsu.link(b1, b2);
     }
 
-    return boxes.at(std::get<0>(curr)).pos.x
+    return (uint64_t) boxes.at(std::get<0>(curr)).pos.x
         * boxes.at(std::get<1>(curr)).pos.x;
 }
 

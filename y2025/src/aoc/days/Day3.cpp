@@ -37,7 +37,7 @@ std::vector<int64_t> Day3::calculateBank(
     return last;
 }
 
-uint64_t Day3::part1() {
+common::Output Day3::part1() {
     uint64_t sum = 0;
     for (const auto& [bank] : banks) {
         sum += vec2int(
@@ -47,7 +47,7 @@ uint64_t Day3::part1() {
     return sum;
 }
 
-uint64_t Day3::part2() {
+common::Output Day3::part2() {
     uint64_t sum = 0;
     for (const auto& [bank] : banks) {
         sum += vec2int(

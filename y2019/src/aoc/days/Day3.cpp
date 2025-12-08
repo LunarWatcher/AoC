@@ -57,7 +57,7 @@ std::unordered_map<WireDirection, std::vector<LineWithPointData>> Day3::convertT
     return wires;
 }
 
-uint64_t Day3::part1() {
+common::Output Day3::part1() {
     auto w1 = convertToWires(this->wires.at(0));
     auto w2 = convertToWires(this->wires.at(1));
 
@@ -91,10 +91,10 @@ uint64_t Day3::part1() {
         }
     }
 
-    return closest.manhatten();
+    return (uint64_t) closest.manhatten();
 }
 
-uint64_t Day3::part2() {
+common::Output Day3::part2() {
     auto w1 = convertToWires(this->wires.at(0));
     auto w2 = convertToWires(this->wires.at(1));
 
@@ -132,7 +132,7 @@ uint64_t Day3::part2() {
         }
     }
 
-    return nearestIntersect.second;
+    return (uint64_t) nearestIntersect.second;
 }
 
 }

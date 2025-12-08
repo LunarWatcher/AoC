@@ -11,7 +11,7 @@ void Day2::parse() {
     };
 }
 
-uint64_t Day2::part1() {
+common::Output Day2::part1() {
     IntCode computer{this->prog};
     computer.recode({
         {1, 12},
@@ -20,7 +20,7 @@ uint64_t Day2::part1() {
     return computer.run();
 }
 
-uint64_t Day2::part2() {
+common::Output Day2::part2() {
     for (int64_t n = 0; n <= 99; ++n) {
         for (int64_t v = 0; v <= 99; ++v) {
             IntCode computer{this->prog};

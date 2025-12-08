@@ -63,11 +63,11 @@ uint64_t Day6::recurseTreeP2(const std::string& currentRoot, uint64_t treeSize, 
     return s;
 }
 
-uint64_t Day6::part1() {
+common::Output Day6::part1() {
     return recurseTree("COM", 0);
 }
 
-uint64_t Day6::part2() {
+common::Output Day6::part2() {
     bool _ = false;
     // -2 because the first root notes return 1 while they're supposed to return 0. Could be avoided if an optional or
     // negative numbers were used instead, but that's effort and I have committed.

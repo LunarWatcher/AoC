@@ -5,6 +5,8 @@
 
 namespace common {
 
+
+using Output = std::variant<int64_t, uint64_t, std::string>;
 class Day {
 protected:
     std::filesystem::path path;
@@ -16,8 +18,8 @@ public:
     virtual ~Day() = default;
 
     virtual void parse() = 0;
-    virtual uint64_t part1() = 0;
-    virtual uint64_t part2() = 0;
+    virtual common::Output part1() = 0;
+    virtual common::Output part2() = 0;
 
     virtual int day() = 0;
 };

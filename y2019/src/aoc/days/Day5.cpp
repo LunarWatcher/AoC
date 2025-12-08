@@ -12,7 +12,7 @@ void Day5::parse() {
     };
 }
 
-uint64_t Day5::part1() {
+common::Output Day5::part1() {
     IntCode computer(prog);
     computer.input.push(1);
     Program state;
@@ -21,7 +21,7 @@ uint64_t Day5::part1() {
     return computer.diagnostic();
 }
 
-uint64_t Day5::part2() {
+common::Output Day5::part2() {
     IntCode computer(prog);
     computer.input.push(5);
     computer.run();

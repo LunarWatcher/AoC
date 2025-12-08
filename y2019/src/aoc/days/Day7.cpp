@@ -13,7 +13,7 @@ void Day7::parse() {
     };
 }
 
-uint64_t Day7::part1() {
+common::Output Day7::part1() {
     std::vector<int64_t> phases = {0, 1, 2, 3, 4};
 
     int64_t out = 0;
@@ -32,7 +32,7 @@ uint64_t Day7::part1() {
     return out;
 }
 
-uint64_t Day7::part2() {
+common::Output Day7::part2() {
     std::vector<int64_t> phases = {5, 6, 7, 8, 9};
 
 

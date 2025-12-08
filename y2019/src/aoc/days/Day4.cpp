@@ -11,7 +11,7 @@ void Day4::parse() {
     ).at(0);
 }
 
-uint64_t Day4::part1() {
+common::Output Day4::part1() {
     uint64_t matches = 0;
     for (size_t i = range.left; i <= range.right; ++i) {
         auto asStr = std::to_string(i);
@@ -37,7 +37,7 @@ nope:;
     return matches;
 }
 
-uint64_t Day4::part2() {
+common::Output Day4::part2() {
     uint64_t matches = 0;
     for (size_t i = range.left; i <= range.right; ++i) {
         auto asStr = std::to_string(i);

@@ -11,6 +11,6 @@ TEST_CASE("Day 1, main test case", "[D1][MainTest]") {
         REQUIRE(d.masses.size() == 4);
     }
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 2 + 2 + 654 + 33583);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 2 + 2 + 654 + 33583);
     }
 }

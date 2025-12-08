@@ -5,7 +5,7 @@
 
 namespace common {
 
-double Runner::runPart(int day, bool partB, double parseTime, std::function<int64_t()> runner) {
+double Runner::runPart(int day, bool partB, double parseTime, std::function<common::Output()> runner) {
     auto start = Clock::now();
     auto result = runner();
     auto end = Clock::now();
@@ -13,8 +13,12 @@ double Runner::runPart(int day, bool partB, double parseTime, std::function<int6
     auto partTime = std::chrono::duration<double, std::milli>(end - start)
         .count();
 
-    std::cerr << "Day " << std::format("{:>2}", day) << ", part " << (partB ? "B" : "A")
-        << " ("
+        
+    std::visit([&](const auto& val) {
+
+        std::cerr
+            << "Day " << std::format("{:>2}", day) << ", part " << (partB ? "B" : "A")
+            << " ("
             << GetColourFor{parseTime}
             << std::format("{:>15.15}", parseTime)
             << "ms"
@@ -25,9 +29,10 @@ double Runner::runPart(int day, bool partB, double parseTime, std::function<int6
             << std::format("{:>15.15}", partTime)
             << "ms"
             << stc::colour::reset
-        << "): "
-        << result
-        << std::endl;
+            << "): "
+            << val 
+            << std::endl;
+    }, result);
     
     return partTime;
 }

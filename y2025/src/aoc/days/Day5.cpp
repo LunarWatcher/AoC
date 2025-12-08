@@ -21,7 +21,7 @@ void Day5::parse() {
     );
 }
 
-uint64_t Day5::part1() {
+common::Output Day5::part1() {
     uint64_t fresh = 0;
     for (auto& id : data.ingredientIds) {
         for (auto& [start, end] : data.ranges) {
@@ -34,7 +34,7 @@ uint64_t Day5::part1() {
     return fresh;
 }
 
-uint64_t Day5::part2() {
+common::Output Day5::part2() {
     D5Input data = this->data;
 
     // Deduplicate ranges

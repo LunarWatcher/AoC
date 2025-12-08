@@ -21,8 +21,8 @@ public:
     DECLARE_CONSTRUCTOR(2025, 8, size_t pairs = 1000), pairs(pairs) {}
 
     void parse() override;
-    uint64_t part1() override;
-    uint64_t part2() override;
+    common::Output part1() override;
+    common::Output part2() override;
 
 };
 

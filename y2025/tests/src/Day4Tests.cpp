@@ -10,6 +10,6 @@ TEST_CASE("Day 4, main test", "[D4][MainTest]") {
         REQUIRE(d.map.size() == 10);
     }
     SECTION("Part 1") {
-        REQUIRE(d.part1() == 13);
+        REQUIRE(std::get<uint64_t>(d.part1()) == 13);
     }
 }

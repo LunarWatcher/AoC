@@ -31,7 +31,7 @@ void Day6::parse() {
     }
 }
 
-uint64_t Day6::part1() {
+common::Output Day6::part1() {
     uint64_t sum = 0;
 
     for (const auto& column : input) {
@@ -54,7 +54,7 @@ uint64_t Day6::part1() {
     return sum;
 }
 
-uint64_t Day6::part2() {
+common::Output Day6::part2() {
     uint64_t sum = 0;
     for (const auto& column : input) {
         int64_t intermediate = column.op == Operator::MULT ? 1 : 0;
