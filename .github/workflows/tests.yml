@@ -1,0 +1,43 @@
+name: Test workflow
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        library:
+          - test-common
+          - test-2019
+          - test-2025
+
+    runs-on: ubuntu-24.04
+    container: ubuntu:rolling
+    steps:
+      - name: Install deps
+        run: |
+          apt update && apt upgrade -y
+          apt install -y cmake build-essential make git libcurl4-openssl-dev
+          apt install -y g++
+
+      - name: Environment information
+        run: |
+          g++ -v
+      - uses: actions/checkout@main
+      - name: Fix git ownership
+        run: |
+          git config --global --add safe.directory $(pwd)
+      - name: Print environment
+        run: |
+          cmake --version
+      - name: Run build
+        run: |
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          make -j $(nproc) ${{ matrix.library }}
+        env:
+          CXX: g++
+          CC: gcc
+
