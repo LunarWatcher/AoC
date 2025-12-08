@@ -1,6 +1,6 @@
 add_library(
     aoc-common
-SHARED
+STATIC
     src/common/Runner.cpp
 )
 target_include_directories(
