@@ -4,7 +4,7 @@
 namespace aoc2019 {
 
 void Day2::parse() {
-    this->computer = IntCode {
+    this->prog = {
         common::Loader::loadSingleLineIntVector<int64_t>(
             this->path
         )
@@ -12,6 +12,7 @@ void Day2::parse() {
 }
 
 uint64_t Day2::part1() {
+    IntCode computer{this->prog};
     computer.recode({
         {1, 12},
         {2, 2}
@@ -22,6 +23,7 @@ uint64_t Day2::part1() {
 uint64_t Day2::part2() {
     for (int64_t n = 0; n <= 99; ++n) {
         for (int64_t v = 0; v <= 99; ++v) {
+            IntCode computer{this->prog};
             computer.recode({
                 {1, n},
                 {2, v}

@@ -8,7 +8,6 @@ TEST_CASE("Day 2, main test case", "[D2][MainTest]") {
     d.parse();
 
     SECTION("Parsing") {
-        auto& comp = d.computer;
-        REQUIRE(comp.source.ram.size() == 12);
+        REQUIRE(d.prog.ram.size() == 12);
     }
 }

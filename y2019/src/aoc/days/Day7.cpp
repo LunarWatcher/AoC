@@ -6,7 +6,7 @@
 namespace aoc2019 {
 
 void Day7::parse() {
-    this->computer = IntCode {
+    this->prog = {
         common::Loader::loadSingleLineIntVector<int64_t>(
             this->path
         )
@@ -15,17 +15,17 @@ void Day7::parse() {
 
 uint64_t Day7::part1() {
     std::vector<int64_t> phases = {0, 1, 2, 3, 4};
-    this->computer.cacheWorkingMemory = true;
 
     int64_t out = 0;
     do {
-        this->computer.recode({});
         int64_t signal = 0;
         for (auto val : phases) {
-            Program p;
-            auto in = StdStream {{ val, signal }};
-            this->computer.run(&in, &p);
-            signal = this->computer.diagnostic();
+            IntCode computer{this->prog};
+            computer.input.push(val);
+            computer.input.push(signal);
+
+            computer.run();
+            signal = computer.diagnostic();
         }
         out = std::max(out, signal);
     } while (std::next_permutation(phases.begin(), phases.end()));
@@ -35,36 +35,28 @@ uint64_t Day7::part1() {
 uint64_t Day7::part2() {
     std::vector<int64_t> phases = {5, 6, 7, 8, 9};
 
-    this->computer.cacheWorkingMemory = true;
 
     int64_t out = 0;
     do {
-        this->computer.recode({});
-        std::vector<Program> states;
-        states.resize(5);
+        std::vector<IntCode> states{
+            5,
+            this->prog
+        };
 
-        std::vector<StdStream> streams;
-        streams.reserve(5);
+
         for (size_t i = 0; i < 5; ++i) {
-            streams.push_back(StdStream {
-                {  phases.at(i)  }
-            });
+            states.at(i).input.push(phases.at(i));
         }
 
         int64_t signal = 0;
-        while (!computer.hasHalted()) {
+        while (!states.at(0).hasHalted()) {
             for (size_t i = 0; i < phases.size(); ++i) {
-                auto& stream = streams.at(i);
-                stream.push(signal);
-
-                this->computer.run(
-                    &stream,
-                    &states.at(i)
-                );
-                signal = this->computer.diagnostic();
+                auto& computer = states.at(i);
+                computer.input.push(signal);
+                computer.run();
+                signal = computer.diagnostic();
             }
         }
-        computer.recode({});
         out = std::max(out, signal);
     } while (std::next_permutation(phases.begin(), phases.end()));
     return out;

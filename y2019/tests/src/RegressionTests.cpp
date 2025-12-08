@@ -20,7 +20,7 @@ TEST_CASE("Day 1", "[Regression]") {
 TEST_CASE("Day 2", "[Regression]") {
     Day2 d;
     d.parse();
-    REQUIRE(d.computer.source.ram.size() == 117);
+    REQUIRE(d.prog.ram.size() == 117);
     REQUIRE(d.part1() == 4570637);
     REQUIRE(d.part2() == 5485);
 }

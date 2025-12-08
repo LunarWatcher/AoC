@@ -8,7 +8,7 @@ namespace aoc2019 {
 
 class Day2 : public common::Day {
 public:
-    IntCode computer;
+    Program prog;
 
     DECLARE_DAY(2019, 2);
 

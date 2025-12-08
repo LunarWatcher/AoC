@@ -5,7 +5,7 @@
 namespace aoc2019 {
 
 void Day5::parse() {
-    this->computer = IntCode {
+    this->prog = {
         common::Loader::loadSingleLineIntVector<int64_t>(
             this->path
         )
@@ -13,19 +13,18 @@ void Day5::parse() {
 }
 
 uint64_t Day5::part1() {
-    computer.cacheWorkingMemory = true;
-    StdStream s { .data = { 1 } };
+    IntCode computer(prog);
+    computer.input.push(1);
     Program state;
-    computer.runUntilHalted(&s, &state);
+    computer.runUntilHalted();
 
     return computer.diagnostic();
 }
 
 uint64_t Day5::part2() {
-    computer.recode({});
-    computer.cacheWorkingMemory = false;
-    StdStream s { .data = { 5 } };
-    computer.run(&s);
+    IntCode computer(prog);
+    computer.input.push(5);
+    computer.run();
     return computer.diagnostic();
 }
 

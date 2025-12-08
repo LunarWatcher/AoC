@@ -7,20 +7,17 @@
 namespace aoc2019 {
 
 IntCode::IntCode(
-    const std::vector<int64_t>& instructions
-) : source(instructions), workingSet(instructions) {
+    const Program& prog
+) : ram(prog) {
 
 }
 
 void IntCode::recode(
     const std::vector<std::pair<size_t, int64_t>>& modifications
 ) {
-    workingSet = source;
     for (const auto& [pos, val] : modifications) {
-        workingSet.ram.at(pos) = val;
+        this->ram.ram.at(pos) = val;
     }
-
-    this->halted = false;
 }
 
 Opcode4 IntCode::resolveOp4(
@@ -39,26 +36,8 @@ int64_t IntCode::resolveMode(int64_t rawOp, short parameterIdx) {
     return rawOp / int64_t(std::pow<int64_t>(10, parameterIdx + 2)) % 10;
 }
 
-int64_t IntCode::run(
-    StdStream* in,
-    Program* inspect
-) {
+int64_t IntCode::run() {
     // output.data.clear();
-
-    if (cacheWorkingMemory) {
-        if (inspect == nullptr) {
-            throw std::runtime_error("Bad girl 2");
-        }
-
-        if (inspect->ram.size() == 0) {
-            *inspect = workingSet;
-        }
-    }
-
-    // Create a copy of the workingSet instructions to keep a per-run state.
-    auto& ram = cacheWorkingMemory ? *inspect : workingSet;
-
-    auto& ptr = ram.ptr;
 
     bool running = true;
     while (running) {
@@ -82,10 +61,7 @@ int64_t IntCode::run(
         } break;
         case 3: {
             auto dest = ram.resolveImmediateMode(ptr + 1);
-            if (in == nullptr) {
-                throw std::runtime_error("Bad girl");
-            }
-            ram.at(dest) = in->next();
+            ram.at(dest) = input.next();
             ptr += 2;
         } break;
         case 4: {
@@ -147,13 +123,10 @@ int64_t IntCode::run(
     return ram.at(0);
 }
 
-int64_t IntCode::runUntilHalted(
-    StdStream* in,
-    Program* inspect
-) {
+int64_t IntCode::runUntilHalted() {
     int64_t out;
     while (!halted) {
-        out = run(in, inspect);
+        out = run();
     }
     return out;
 }

@@ -4,15 +4,10 @@
 TEST_CASE("Day 2 IntCode examples", "[D2][IntCode]") {
     SECTION("Main example") {
         aoc2019::IntCode computer {
-            { 1,9,10,3,2,3,11,0,99,30,40,50 }
+            {{ 1,9,10,3,2,3,11,0,99,30,40,50 }}
         };
 
-        aoc2019::Program program;
-        auto result = computer.run({}, &program);
-
-        // for (auto& p : program) {
-        //     std::cout << p << "," << std::endl;
-        // }
+        auto result = computer.run();
 
         REQUIRE(result == 3500);
     }
@@ -41,16 +36,18 @@ TEST_CASE("Mode parsing", "[IntCode]") {
 
 TEST_CASE("Day 5 part 2 features", "[IntCode]") {
     aoc2019::IntCode computer{ 
-        {
-            3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,
-            1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,
-            999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99
+        aoc2019::Program {
+            {
+                3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,
+                1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,
+                999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99
+            }
         }
     };
 
     SECTION("Value < 8") {
-        aoc2019::StdStream s {{ 5 }};
-        computer.run(&s);
+        computer.input.push(6);
+        computer.run();
         REQUIRE(computer.diagnostic() == 999);
     }
 }

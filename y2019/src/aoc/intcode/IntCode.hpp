@@ -16,8 +16,6 @@ struct Opcode4 {
 struct Program {
     std::vector<int64_t> ram;
 
-    size_t ptr = 0;
-
     int64_t resolveReference(
         size_t addr
     ) const {
@@ -66,23 +64,15 @@ private:
     );
 
     bool halted = false;
-public:
-    StdStream output;
-    bool cacheWorkingMemory = false;
 
-    /**
-     * Represents the source instructions.
-     */
-    Program source;
-    /**
-     * Represents the instructions we're working on.
-     * This is usually a copy of source, but allows for per-part modifications of the instructions without needing to
-     * reinitialise the intcode computer.
-     */
-    Program workingSet;
+    size_t ptr = 0;
+public:
+    StdStream input, output;
+
+    Program ram;
 
     IntCode() = default;
-    IntCode(const std::vector<int64_t>& instructions);
+    IntCode(const Program& prog);
 
 
     int64_t resolveReference(const Program& ram, size_t addr);
@@ -99,15 +89,9 @@ public:
         const std::vector<std::pair<size_t, int64_t>>& modifications
     );
 
-    int64_t run(
-        StdStream* in = nullptr,
-        Program* inspect = nullptr
-    );
+    int64_t run();
 
-    int64_t runUntilHalted(
-        StdStream* in = nullptr,
-        Program* inspect = nullptr
-    );
+    int64_t runUntilHalted();
 
     int64_t diagnostic() {
         if (output.data.empty()) {
