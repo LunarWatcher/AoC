@@ -20,6 +20,16 @@ struct Vec2 {
             y - other.y
         };
     }
+    Vec2 operator+(const Vec2& other) const {
+        return Vec2 {
+            x + other.x,
+            y + other.y
+        };
+    }
+
+    bool operator==(const Vec2& other) const {
+        return other.x == x && other.y == y;
+    }
 };
 
 struct Vec3 {

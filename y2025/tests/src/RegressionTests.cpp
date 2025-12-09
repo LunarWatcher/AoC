@@ -8,6 +8,7 @@
 #include "aoc/days/Day6.hpp"
 #include "aoc/days/Day7.hpp"
 #include "aoc/days/Day8.hpp"
+#include "aoc/days/Day9.hpp"
 
 using namespace aoc2025;
 
@@ -64,4 +65,11 @@ TEST_CASE("Day 8 regression tests", "[Regression]") {
     d.parse();
     REQUIRE(std::get<uint64_t>(d.part1()) == 181584);
     REQUIRE(std::get<uint64_t>(d.part2()) == 8465902405);
+}
+
+TEST_CASE("Day 9 regression test", "[Regression]") {
+    Day9 d;
+    d.parse();
+
+    REQUIRE(std::get<uint64_t>(d.part1()) == 4781377701);
 }
