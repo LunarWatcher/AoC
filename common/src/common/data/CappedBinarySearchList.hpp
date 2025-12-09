@@ -19,7 +19,7 @@ struct CappedBinarySearchList {
     } 
 
     void add(const T& it) {
-        if (!items.empty() && comparator(items.back(), it)) {
+        if (items.size() == cap && comparator(items.back(), it)) {
             return;
         }
         auto search = std::lower_bound(
