@@ -5,7 +5,13 @@
 
 namespace common {
 
-double Runner::runPart(int day, bool partB, double parseTime, std::function<common::Output()> runner) {
+double Runner::runPart(
+    int day,
+    bool partB,
+    double parseTime,
+    bool borked,
+    std::function<common::Output()> runner
+) {
     auto start = Clock::now();
     auto result = runner();
     auto end = Clock::now();
@@ -29,8 +35,16 @@ double Runner::runPart(int day, bool partB, double parseTime, std::function<comm
             << std::format("{:>15.15}", partTime)
             << "ms"
             << stc::colour::reset
-            << "): "
-            << val 
+            << "): ";
+
+            if (borked) {
+                std::cerr << stc::colour::use<stc::colour::Typography::BOLD>
+                    << stc::colour::fg<stc::colour::FourBitColour::RED>
+                    << "[!!BORKED!!] "
+                    << stc::colour::reset;
+            }
+            
+        std::cerr << val 
             << std::endl;
     }, result);
     
@@ -93,11 +107,11 @@ void Runner::run(
 
         partA.parseTimes += parseTime;
         partB.parseTimes += parseTime;
-        partA.partTimes += runPart(day->day(), false, parseTime, [&]() {
+        partA.partTimes += runPart(day->day(), false, parseTime, day->p1borked(), [&]() {
             return day->part1();
         });
 
-        partB.partTimes += runPart(day->day(), true, parseTime, [&]() {
+        partB.partTimes += runPart(day->day(), true, parseTime, day->p2borked(), [&]() {
             return day->part2();
         });
     }

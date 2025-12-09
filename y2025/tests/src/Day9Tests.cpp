@@ -29,8 +29,7 @@ TEST_CASE("Test 2", "[Day9]") {
     }
     SECTION("Part 2") {
         REQUIRE(
-            // 10,10 -> 18,14 (9*5; inclusive bounds)
-            std::get<uint64_t>(d.part2()) == 9ull * 5ull
+            std::get<uint64_t>(d.part2()) == 55
         );
     }
 }

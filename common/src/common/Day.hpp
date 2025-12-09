@@ -23,6 +23,8 @@ public:
     virtual common::Output part2() = 0;
 
     virtual int day() = 0;
+    virtual bool p1borked() { return false; }
+    virtual bool p2borked() { return false; }
 };
 
 #define DECLARE_DAY(Year, DayNum) \

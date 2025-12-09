@@ -43,7 +43,7 @@ struct CombinedPartTimes {
 
 extern std::ostream& operator<<(std::ostream& ss, const CombinedPartTimes& v);
 
-double runPart(int day, bool partB, double parseTime, std::function<common::Output()> runner);
+double runPart(int day, bool partB, double parseTime, bool borked, std::function<common::Output()> runner);
 
 void run(
     int argc,

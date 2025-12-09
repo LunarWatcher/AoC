@@ -1,6 +1,8 @@
 #include "Day9.hpp"
 #include "common/loader/Loader.hpp"
 
+#include <stc/Math.hpp>
+
 namespace aoc2025 {
 
 void Day9::parse() {
@@ -47,25 +49,64 @@ common::Output Day9::part2() {
         auto& p = points.at(i);
         for (size_t j = i + 2; j < points.size(); ++j) {
             auto& p2 = points.at(j);
-            auto dx = p.x - p2.x;
-            auto dy = p.y - p2.y;
+            auto dx = std::max(p.x, p2.x) - std::min(p.x, p2.x);
+            auto dy = std::max(p.y, p2.y) - std::min(p.y, p2.y);
 
-            uint64_t area = std::abs(
-                dx + 1
-            ) * std::abs(
-                dy + 1
-            );
-            auto c1 = common::Vec2 { p.x, p2.y };
-            auto c2 = common::Vec2 { p2.x, p.y };
+            uint64_t area = (dx + 1) * (dy + 1);
             for (size_t k = 0; k < points.size(); ++k) {
-                auto& refPoint = points.at(k);
-                if (refPoint == c1 || refPoint == c2) {
-                    std::cout << p << "-" << p2 << std::endl;
-                    maxArea = std::max(maxArea, area);
-                    break;
+                const auto& a = points.at(k);
+                const auto& b = points.at((k + 1) % points.size());
+                auto mid = common::Vec2 {
+                    a.x + (a.x - b.x) / 2,
+                    a.y + (a.y - b.y) / 2
+                };
+
+                common::Vec2 c1 = { p.x, p2.y };
+                common::Vec2 c2 = { p2.x, p.y };
+                if (
+                    stc::math::g2d::rectangleContainsPointExclusive<int64_t>(
+                        a, 
+                        p,
+                        p2
+                    ) 
+                    || stc::math::g2d::rectangleContainsPointExclusive<int64_t>(
+                        mid,
+                        p,
+                        p2
+                    ) 
+                    || stc::math::g2d::lineIntersectsRectangleExclusive<int64_t>(
+                        a, b,
+                        p,
+                        c1, c2,
+                        p2
+                    )
+                ) {
+                    // std::cout << "DISCARD: Area is " << area << " between " << p << "-" << p2 
+                    //     << "(" << c1 << "--" << c2 << ")"
+                    //     << "by " << a << "--" << b
+
+                    // << ";;; contains: " << stc::math::g2d::rectangleContainsPointExclusive<int64_t>(
+                    //     a, 
+                    //     p, p2
+                    // )
+                    // << ";;; contains line: " <<  stc::math::g2d::lineIntersectsRectangleExclusive<int64_t>(
+                    //     a, b,
+                    //     p,
+                    //     c1, c2,
+                    //     p2
+                    // )
+                    //     << std::endl;
+                    goto nope;
                 }
-                
+
             }
+                    // std::cout << "DISCARD: Area is " << area << " between " << p << "-" << p2 
+
+
+                    //     << std::endl;
+
+            maxArea = std::max(maxArea, area);
+nope:;
         }
     }
 
