@@ -55,12 +55,14 @@ common::Output Day9::part2() {
             ) * std::abs(
                 dy + 1
             );
+            auto c1 = common::Vec2 { p.x, p2.y };
+            auto c2 = common::Vec2 { p2.x, p.y };
             for (size_t k = 0; k < points.size(); ++k) {
                 auto& refPoint = points.at(k);
-                auto c1 = common::Vec2 { p.x, p2.y };
-                auto c2 = common::Vec2 { p2.x, p.y };
                 if (refPoint == c1 || refPoint == c2) {
+                    std::cout << p << "-" << p2 << std::endl;
                     maxArea = std::max(maxArea, area);
+                    break;
                 }
                 
             }

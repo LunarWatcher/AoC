@@ -72,4 +72,5 @@ TEST_CASE("Day 9 regression test", "[Regression]") {
     d.parse();
 
     REQUIRE(std::get<uint64_t>(d.part1()) == 4781377701);
+    // REQUIRE(std::get<uint64_t>(d.part2()) == 4781377701);
 }

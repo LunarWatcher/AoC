@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <ostream>
 namespace common {
 
 struct Vec2 {
@@ -31,6 +32,10 @@ struct Vec2 {
         return other.x == x && other.y == y;
     }
 };
+
+inline std::ostream& operator<<(std::ostream& ss, const Vec2& v) {
+    return ss << v.x << "," << v.y;
+}
 
 struct Vec3 {
     int64_t x, y, z;
