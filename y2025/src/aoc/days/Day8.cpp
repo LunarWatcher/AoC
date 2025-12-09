@@ -1,4 +1,5 @@
 #include "Day8.hpp"
+#include "common/data/CappedBinarySearchList.hpp"
 #include "common/data/DisjointSet.hpp"
 #include "common/loader/Loader.hpp"
 #include "common/math/Vec.hpp"
@@ -24,20 +25,17 @@ void Day8::parse() {
 common::Output Day8::part1() {
     auto boxes = this->boxes;
 
-    std::vector<std::tuple<size_t, size_t, uint64_t>> lines;
-    lines.reserve(boxes.size() * boxes.size());
+    common::CappedBinarySearchList<std::tuple<size_t, size_t, uint64_t>> lines{
+        1000,
+        [](const auto& a, const auto& b) { return std::get<2>(a) < std::get<2>(b); }
+    };
 
     for (size_t i = 0; i < boxes.size() - 1; ++i) {
         auto& box = boxes.at(i);
         for (size_t j = i + 1; j < boxes.size(); ++j) {
-            lines.push_back({ i, j, box.pos.euclidiean(boxes.at(j).pos) });
+            lines.add({ i, j, box.pos.euclidiean(boxes.at(j).pos) });
         }
     }
-
-    // TODO: this accounts for the majority of the time spent
-    std::sort(lines.begin(), lines.end(), [](const auto& a, const auto& b) {
-        return std::get<2>(a) < std::get<2>(b); 
-    });
 
     common::DisjointSet<uint64_t> dsu(boxes.size());
 

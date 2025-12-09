@@ -1,5 +1,6 @@
 add_executable(tests-common
     src/DisjointSetTests.cpp
+    src/CappedBinarySearchListTests.cpp
 )
 
 target_link_libraries(tests-common Catch2::Catch2WithMain)
