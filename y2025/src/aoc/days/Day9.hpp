@@ -15,9 +15,6 @@ public:
     void parse() override;
     common::Output part1() override;
     common::Output part2() override;
-
-    bool p2borked() override { return true; }
-
 };
 
 }

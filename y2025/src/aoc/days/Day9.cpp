@@ -1,4 +1,5 @@
 #include "Day9.hpp"
+#include "common/debug/GeometricInfoDump.hpp"
 #include "common/loader/Loader.hpp"
 
 #include <stc/Math.hpp>
@@ -53,57 +54,48 @@ common::Output Day9::part2() {
             auto dy = std::max(p.y, p2.y) - std::min(p.y, p2.y);
 
             uint64_t area = (dx + 1) * (dy + 1);
+
+            // No join in checking if it isn't an upgrade.
+            if (area <= maxArea) {
+                continue;
+            }
+
+            auto minX = std::min(p.x, p2.x) + 1;
+            auto maxX = std::max(p.x, p2.x) - 1;
+            auto minY = std::min(p.y, p2.y) + 1;
+            auto maxY = std::max(p.y, p2.y) - 1;
+
+            auto shrunkRectStart = common::Vec2 { minX, minY };
+            auto shrunkRectEnd = common::Vec2 { maxX, maxY };
             for (size_t k = 0; k < points.size(); ++k) {
                 const auto& a = points.at(k);
                 const auto& b = points.at((k + 1) % points.size());
-                auto mid = common::Vec2 {
-                    a.x + (a.x - b.x) / 2,
-                    a.y + (a.y - b.y) / 2
-                };
-
-                common::Vec2 c1 = { p.x, p2.y };
-                common::Vec2 c2 = { p2.x, p.y };
+                
                 if (
-                    stc::math::g2d::rectangleContainsPointExclusive<int64_t>(
+                    stc::math::g2d::rectangleContainsPointInclusive<int64_t>(
                         a, 
-                        p,
-                        p2
+                        shrunkRectStart,
+                        shrunkRectEnd
                     ) 
-                    || stc::math::g2d::rectangleContainsPointExclusive<int64_t>(
-                        mid,
-                        p,
-                        p2
-                    ) 
-                    || stc::math::g2d::lineIntersectsRectangleExclusive<int64_t>(
+                    || stc::math::g2d::lineIntersectsRectangleInclusive<int64_t>(
                         a, b,
-                        p,
-                        c1, c2,
-                        p2
+                        shrunkRectStart,
+                        shrunkRectEnd
                     )
                 ) {
-                    // std::cout << "DISCARD: Area is " << area << " between " << p << "-" << p2 
-                    //     << "(" << c1 << "--" << c2 << ")"
-                    //     << "by " << a << "--" << b
-
-                    // << ";;; contains: " << stc::math::g2d::rectangleContainsPointExclusive<int64_t>(
-                    //     a, 
-                    //     p, p2
-                    // )
-                    // << ";;; contains line: " <<  stc::math::g2d::lineIntersectsRectangleExclusive<int64_t>(
-                    //     a, b,
-                    //     p,
-                    //     c1, c2,
-                    //     p2
-                    // )
+                    // std::cout << "DISCARD: Area is " << area << " between " 
+                    //     << common::debug::InfoDumpTwoPointRectangle { p, p2 }
+                    //     << "Checked against shrunk rect:"
+                    //     << common::debug::InfoDumpTwoPointRectangle { shrunkRectStart, shrunkRectEnd }
+                    //     << "Thrown out by line " << a << ";;" << b
                     //     << std::endl;
                     goto nope;
                 }
 
             }
-                    // std::cout << "DISCARD: Area is " << area << " between " << p << "-" << p2 
-
-
-                    //     << std::endl;
+            // std::cout << "PASS: Area is " << area << " between " 
+            //     << common::debug::InfoDumpTwoPointRectangle { p, p2 }
+            //     << std::endl;
 
             maxArea = std::max(maxArea, area);
 nope:;
