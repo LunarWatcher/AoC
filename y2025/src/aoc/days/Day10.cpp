@@ -16,14 +16,14 @@ common::Output Day10::part1() {
 
     for (auto& [sourceIndicators, buttons, _] : machines) {
 
-        std::queue<std::pair<uint64_t, std::vector<bool>>> q {
+        std::queue<std::pair<uint64_t, size_t>> q {
             {
                 {0, sourceIndicators},
             }
         };
 
 
-        std::optional<std::pair<uint64_t, std::vector<bool>>> match;
+        std::optional<std::pair<uint64_t, size_t>> match;
         while (q.size()) {
             auto [ click, currState ] = q.front();
             q.pop();
@@ -33,12 +33,8 @@ common::Output Day10::part1() {
             for (auto& button : buttons) {
                 auto state = currState;
                 button.click(state);
-                bool hasValue = false;
-                for (auto val : state) {
-                    hasValue = hasValue || val;
-                }
 
-                if (!hasValue) {
+                if (state == 0) {
                     match = { click, state };
                     goto done;
                 }

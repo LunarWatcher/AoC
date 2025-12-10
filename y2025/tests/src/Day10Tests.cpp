@@ -1,4 +1,5 @@
 #include "aoc/days/Day10.hpp"
+#include <bitset>
 #include <catch2/catch_test_macros.hpp>
 
 using namespace aoc2025;
@@ -14,34 +15,39 @@ TEST_CASE("Test 1", "[Day10]") {
         auto& m2 = d.machines.at(1);
         auto& m3 = d.machines.at(2);
 
-        REQUIRE(m1.indicators == std::vector { false, true, true, false });
-        REQUIRE(m2.indicators == std::vector { false, false, false, true, false });
-        REQUIRE(m3.indicators == std::vector { false, true, true, true, false, true });
+        REQUIRE(m1.indicators == 0b0110);
+        REQUIRE(m2.indicators == 0b01000);
+        REQUIRE(m3.indicators == 0b101110);
 
         REQUIRE(m1.buttons.size() == 6);
         REQUIRE(m2.buttons.size() == 5);
         REQUIRE(m3.buttons.size() == 4);
 
-        REQUIRE(m1.buttons == std::vector<Button> {
-            Button { .targets = { 3 } },
-            Button { .targets = { 1, 3 } },
-            Button { .targets = { 2 } },
-            Button { .targets = { 2, 3 } },
-            Button { .targets = { 0, 2 } },
-            Button { .targets = { 0, 1 } },
-        });
+        auto m1Expected = std::vector<size_t> {
+            0b1000,
+            0b1010,
+            0b0100,
+            0b1100,
+            0b0101,
+            0b0011,
+        };
+        for (size_t i = 0; i < m1.buttons.size(); ++i) {
+            INFO(i << "; " << std::bitset<4>(m1.buttons.at(i).mask) << "=?=" << std::bitset<4>(m1Expected.at(i)));
+            REQUIRE(m1.buttons.at(i).mask == m1Expected.at(i));
+        }
+
         REQUIRE(m2.buttons == std::vector<Button> {
-            Button { .targets = { 0, 2, 3, 4 } },
-            Button { .targets = { 2, 3 } },
-            Button { .targets = { 0, 4 } },
-            Button { .targets = { 0, 1, 2 } },
-            Button { .targets = { 1, 2, 3, 4 } },
+            Button { 0b11101 },
+            Button { 0b01100 },
+            Button { 0b10001 },
+            Button { 0b00111 },
+            Button { 0b11110 },
         });
         REQUIRE(m3.buttons == std::vector<Button> {
-            Button { .targets = { 0, 1, 2, 3, 4 } },
-            Button { .targets = { 0, 3, 4 } },
-            Button { .targets = { 0, 1, 2, 4, 5 } },
-            Button { .targets = { 1, 2 } },
+            Button { 0b11111 },
+            Button { 0b11001 },
+            Button { 0b110111 },
+            Button { 0b110 },
         });
 
         REQUIRE(

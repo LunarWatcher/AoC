@@ -9,33 +9,35 @@
 namespace aoc2025 {
 
 struct Button {
-    std::vector<size_t> targets;
+    size_t mask = 0;
 
-    void click(
-        std::vector<bool>& out
-    ) {
-        for (auto& target : targets) {
-            auto v = out.at(target);
-            v = !v;
-        }
+    void set(size_t index) {
+        mask |= (1 << index);
     }
 
-    bool operator==(const Button& other) const { return targets == other.targets; }
+    void click(
+        size_t& out
+    ) {
+        out ^= mask;
+    }
+
+    bool operator==(const Button& other) const { return mask == other.mask; }
 };
 
 struct UselessMachine {
-    std::vector<bool> indicators;
+    size_t indicators;
     std::vector<Button> buttons;
     std::vector<uint64_t> joltages;
 
-    UselessMachine(const std::string& v) {
+    UselessMachine(const std::string& v): indicators(0) {
         auto firstPart = v.substr(1, v.find(' ') - 2);
 
-        for (auto& ch : firstPart) {
+        for (size_t i = 0; i < firstPart.size(); ++i) {
+            auto ch = firstPart.at(i);
             if (ch == '.') {
-                indicators.push_back(false);
+                // Noop: indicator is initialised to 0, so this is already set to 0
             } else if (ch == '#') {
-                indicators.push_back(true);
+                indicators |= (1 << i);
             } else {
                 [[unlikely]] 
                 throw std::runtime_error("Nope: " + std::string { ch });
@@ -48,10 +50,13 @@ struct UselessMachine {
             auto contents = v.substr(p + 1, end - p - 1);
             auto split = stc::string::split(contents, ',');
             Button b;
+            // std::cout << "[[" << contents << "]]" << std::endl;
             for (auto& n : split) {
+                // std::cout << "SET " << n << std::endl;
                 // std::cout << n << std::endl;
-                b.targets.push_back(std::stoull(n));
+                b.set(std::stoull(n));
             }
+            // std::cout << std::endl;
             buttons.push_back(b);
         }
 
@@ -59,7 +64,6 @@ struct UselessMachine {
         auto end = v.find('}', p);
         auto contents = v.substr(p + 1, end - p - 1);
         auto split = stc::string::split(contents, ',');
-
 
         for (auto& n : split) {
             joltages.push_back(std::stoull(n));
