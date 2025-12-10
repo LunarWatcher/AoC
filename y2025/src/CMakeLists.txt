@@ -9,6 +9,7 @@ add_library(aoc2025src STATIC
     aoc/days/Day7.cpp
     aoc/days/Day8.cpp
     aoc/days/Day9.cpp
+    aoc/days/Day10.cpp
 )
 add_executable(aoc-2025 aoc/Main.cpp)
 

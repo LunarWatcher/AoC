@@ -7,6 +7,7 @@
 #include "aoc/days/Day7.hpp"
 #include "aoc/days/Day8.hpp"
 #include "aoc/days/Day9.hpp"
+#include "aoc/days/Day10.hpp"
 #include <memory>
 #include <common/Runner.hpp>
 
@@ -22,5 +23,6 @@ int main(int argc, const char* argv[]) {
         std::make_shared<Day7>(),
         std::make_shared<Day8>(),
         std::make_shared<Day9>(),
+        std::make_shared<Day10>(),
     });
 }
