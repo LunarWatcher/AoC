@@ -55,7 +55,7 @@ common::Output Day9::part2() {
 
             uint64_t area = (dx + 1) * (dy + 1);
 
-            // No join in checking if it isn't an upgrade.
+            // No point in checking if it isn't an upgrade.
             if (area <= maxArea) {
                 continue;
             }
