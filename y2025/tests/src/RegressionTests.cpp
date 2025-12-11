@@ -2,6 +2,7 @@
 
 #include "aoc/days/Day1.hpp"
 #include "aoc/days/Day10.hpp"
+#include "aoc/days/Day11.hpp"
 #include "aoc/days/Day2.hpp"
 #include "aoc/days/Day3.hpp"
 #include "aoc/days/Day4.hpp"
@@ -80,4 +81,10 @@ TEST_CASE("Day 10 regression test", "[Regression]") {
     Day10 d;
     d.parse();
     REQUIRE(std::get<uint64_t>(d.part1()) == 517);
+}
+
+TEST_CASE("Day 11 regression test", "[Regression]") {
+    Day11 d;
+    d.parse();
+    REQUIRE(std::get<uint64_t>(d.part1()) == 772);
 }
