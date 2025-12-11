@@ -4,6 +4,7 @@
 #include <cassert>
 #include <common/Day.hpp>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace aoc2025 {
@@ -161,7 +162,56 @@ struct LinAlgSystem {
         }
     }
 
-    std::vector<int64_t> solve() {
+    std::vector<int64_t> calculateHitsFor(
+        const std::unordered_map<int64_t, int64_t>& freeVars
+    ) {
+        std::vector<int64_t> unknowns(mat.at(0).size() - 1, 0);
+
+        for (auto& [idx, val] : freeVars) {
+            unknowns.at(idx) = val;
+        }
+
+        for (auto row = (int64_t) mat.size() - 1; row >= 0; --row) {
+            int64_t result = 0; 
+            for (size_t col = 0; col < unknowns.size(); ++col) {
+                result += mat.at(row).at(col) * unknowns.at(col);
+            }
+
+            unknowns[row] = mat.at(row).back() - result;
+        }
+        
+        return unknowns;
+    }
+
+    int checkValidity(const std::vector<int64_t>& sols, const std::vector<Button>& buttons) {
+        if (sols.size() == 0) {
+            throw std::runtime_error("Fuck you");
+        }
+        std::vector<int64_t> answers(buttons.size());
+        for (size_t j = 0; j < sols.size(); ++j) {
+            auto& button = buttons.at(j);
+            for (size_t i = 0; i < button.maskAsArray.size(); ++i) {
+                auto it = button.maskAsArray.at(i);
+                answers.at(i) += ((int64_t) it) * sols.at(j);
+                std::cout << i << "=" << sols.at(i) << std::endl;
+            }
+        }
+        bool equals = true;
+        for (size_t i = 0; i < answers.size(); ++i) {
+            std::cout << answers.at(i) << " " <<  std::endl;
+            if (answers.at(i) != solutionsCol.at(i)) {
+                equals = false;
+            } else if (answers.at(i) > solutionsCol.at(i)) {
+                // Answer exceeds the solution, and the solution is unsolvable.
+                return -1;
+            }
+        }
+        return equals ? 0 : 1;
+    }
+
+    std::vector<int64_t> solve(
+        const std::vector<Button>& buttons
+    ) {
 
         std::vector<int64_t> freeVars;
         for (size_t i = 0; i < pivots.size(); ++i) {
@@ -172,6 +222,17 @@ struct LinAlgSystem {
 
         std::vector<int64_t> bestSolution;
         size_t bestSum = 0;
+
+        if (freeVars.size() == 0) {
+            return calculateHitsFor({});
+        } else {
+            if (buttons.size() == 0) {
+                throw std::runtime_error("Resolved  freeVars.size() > 0, but no buttons provided");
+            }
+            while (true) {
+                break;
+            }
+        }
 
         
 

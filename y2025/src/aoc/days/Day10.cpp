@@ -87,7 +87,8 @@ common::Output Day10::part2() {
         };
         assembleSystem(system, buttons);
 
-        auto res = system.solve();
+        system.gaussEliminate();
+        auto res = system.solve(buttons);
         sum += std::accumulate(
             res.begin(),
             res.end(),

@@ -53,7 +53,7 @@ TEST_CASE("Test 1", "[Day10]") {
         };
         system.mat = {
             { 1, 1,  0 },
-            { 0, 1,  2 },
+            { 0, 1,  0 },
         };
         // System:
         // x + y = 5
@@ -63,6 +63,18 @@ TEST_CASE("Test 1", "[Day10]") {
             { 1, 0, 3 },
             { 0, 1, 2 }
         });
+        REQUIRE(system.pivots == std::vector { true, true });
+        // Buttons are ignored for squares, so this shouldn't ever be triggered
+        std::vector<int64_t> sols;
+        REQUIRE_NOTHROW(sols = system.solve({}));
+
+        REQUIRE(sols == std::vector<int64_t> { 3, 2 });
+
+        // REQUIRE(system.checkValidity(sols, {
+        //     Button { .maskAsArray = { true, true } },
+        //     Button { .maskAsArray = { false, true } }
+        // }) == 0);
+
     }
 
     SECTION("Part 2 linsys assembly") {
@@ -110,7 +122,11 @@ TEST_CASE("Test 1", "[Day10]") {
             {0, 0, 1, 1, 0, -1, 1 },
             {0, 0, 0, 0, 1, 1, 3 },
         });
+        REQUIRE(system.pivots == std::vector { true, true, true, false, true, false });
 
+        auto result = system.solve(machine.buttons);
+
+        // REQUIRE(system.checkValidity(result, machine.buttons) == 0);
     }
 
     // SECTION("Part 2") {
