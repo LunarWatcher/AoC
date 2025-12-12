@@ -14,7 +14,13 @@ TEST_CASE("Test 2", "[Day11]") {
     aoc2025::Day11 d{"test/day11.2.txt"};
     d.parse();
 
-    // SECTION("Part 2") {
-    //     REQUIRE(std::get<uint64_t>(d.part2()) == 2);
-    // }
+    SECTION("Parsing") {
+        REQUIRE(
+            d.racks.contains("aaa")
+        );
+    }
+
+    SECTION("Part 2") {
+        REQUIRE(std::get<uint64_t>(d.part2()) == 2);
+    }
 }

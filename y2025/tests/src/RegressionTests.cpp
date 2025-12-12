@@ -88,6 +88,7 @@ TEST_CASE("Day 11 regression test", "[Regression]") {
     Day11 d;
     d.parse();
     REQUIRE(std::get<uint64_t>(d.part1()) == 772);
+    REQUIRE(std::get<uint64_t>(d.part2()) == 423227545768872ull);
 }
 
 TEST_CASE("Day 12 regression test", "[Regression]") {

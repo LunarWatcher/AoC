@@ -65,14 +65,15 @@ common::Output Day12::part1() {
 
         if (requiredArea < region.width * region.height) {
             ++sum;
-        } else {
-            std::cout << "Discard region size " << region.width << "," << region.height << std::endl;
+        // } else {
+        //     std::cout << "Discard region size " << region.width << "," << region.height << std::endl;
         }
     }
     return sum;
 }
 
 common::Output Day12::part2() {
+    // No part 2: part 2 is completing the rest of the days
     return 0ull;
 }
 

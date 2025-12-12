@@ -27,7 +27,11 @@ public:
     common::Output part1() override;
     common::Output part2() override;
 
-    bool p2borked() override { return true; }
+    uint64_t dfs(
+        std::unordered_map<std::string, uint64_t>& memos,
+        const std::string& next,
+        const std::string& dest
+    );
 };
 
 }

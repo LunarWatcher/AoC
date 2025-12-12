@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/Day.hpp>
+#include <unordered_map>
 #include <vector>
 
 namespace aoc2025 {
@@ -26,7 +27,6 @@ public:
     void parse() override;
     common::Output part1() override;
     common::Output part2() override;
-
 };
 
 }
