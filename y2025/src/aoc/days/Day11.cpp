@@ -1,9 +1,7 @@
 #include "Day11.hpp"
 #include "common/loader/Loader.hpp"
 #include <queue>
-#include <thread>
 #include <unordered_map>
-#include <unordered_set>
 
 namespace aoc2025 {
 
