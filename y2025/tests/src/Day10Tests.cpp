@@ -27,6 +27,7 @@ TEST_CASE("Test 1", "[Day10]") {
         REQUIRE(m2.joltages.size() == 5);
         REQUIRE(m3.joltages.size() == 6);
 
+
         auto m1Expected = std::vector<size_t> {
             0b1000,
             0b1010,
@@ -41,95 +42,50 @@ TEST_CASE("Test 1", "[Day10]") {
         }
     }
 
+    SECTION("Button tests") {
+        auto& buttons = d.machines.at(0).buttons;
+
+        auto vec = std::vector<int64_t>(4);
+        for (size_t i = 0; i < 10; ++i) {
+            buttons.at(0).click(vec);
+            REQUIRE(vec == std::vector<int64_t> { 0, 0, 0, (int64_t) -i - 1 });
+        }
+    }
 
     SECTION("Part 1") {
         REQUIRE(std::get<std::uint64_t>(d.part1()) == 7);
     }
 
-    SECTION("Detached linsys solver") {
-        LinAlgSystem system {
-            .buttonCount = 2,
-            .solutionsCol = { 5, 2 }
-        };
-        system.mat = {
-            { 1, 1,  0 },
-            { 0, 1,  0 },
-        };
-        // System:
-        // x + y = 5
-        //     y = 2
-        system.gaussEliminate();
-        REQUIRE(system.mat == std::vector<std::vector<int64_t>> {
-            { 1, 0, 3 },
-            { 0, 1, 2 }
-        });
-        REQUIRE(system.pivots == std::vector { true, true });
-        // Buttons are ignored for squares, so this shouldn't ever be triggered
-        std::vector<int64_t> sols;
-        REQUIRE_NOTHROW(sols = system.solve({}));
+#ifdef HAS_128_BIT_INT
+    SECTION("128 bit extensions") {
+        auto& m1 = d.machines.at(0);
+        // 3 == 9 * 3 = 27
+        // 27 / 4 = 6R3
+        INFO(std::bitset<128>(m1.buttons.at(0).bigMask));
+        INFO(std::bitset<128>((__uint128_t) 0x8'000'000));
+        REQUIRE(m1.buttons.at(0).bigMask == (__uint128_t) 0x8'000'000); 
 
-        REQUIRE(sols == std::vector<int64_t> { 3, 2 });
+        __uint128_t encodedJoltage = 0;
+        encodedJoltage += (((__uint128_t) 1) << (9 * 3)) * (__uint128_t) 9; 
 
-        // REQUIRE(system.checkValidity(sols, {
-        //     Button { .maskAsArray = { true, true } },
-        //     Button { .maskAsArray = { false, true } }
-        // }) == 0);
+        REQUIRE(d.isButtonEnabled(
+            encodedJoltage, 4, m1.buttons.at(0)
+        ));
 
-    }
-
-    SECTION("Part 2 linsys assembly") {
-        auto& machine = d.machines.at(0);
-        LinAlgSystem system {
-            .buttonCount = machine.buttons.size(),
-            .solutionsCol = machine.joltages
-        };
-        REQUIRE(
-            system.mat.size() == 4
-        );
-
-        for (auto& row : system.mat) {
-            // 6 buttons + solutions column (embedded during elimination, not prepopulated)
-            REQUIRE(row.size() == 7);
-        }
-        d.assembleSystem(system, machine.buttons);
-
-        // Computed by hand
-        // The cols represent x_0..x_n, expectedAnswer
-        // The exepcted answer is, again, not populated at this point
-        std::vector<std::vector<int64_t>> expected = {
-            { 0, 0, 0, 0, 1, 1,   0 },
-            { 0, 1, 0, 0, 0, 1,   0 },
-            { 0, 0, 1, 1, 1, 0,   0 },
-            { 1, 1, 0, 1, 0, 0,   0 },
-        };
-
-
-        for (size_t i = 0; i < expected.size(); ++i) {
-            auto& exp = expected.at(i);
-            auto& actual = system.mat.at(i);
-
-            for (size_t v = 0; v < exp.size(); ++v) {
-                INFO("Row " << i << ", col " << v);
-                REQUIRE(exp.at(v) == actual.at(v));
-            }
+        for (size_t i = 1; i < m1.buttons.size(); ++i) {
+            REQUIRE_FALSE(d.isButtonEnabled(
+                encodedJoltage, 4, m1.buttons.at(i)
+            ));
         }
 
-        system.gaussEliminate();
-
-        REQUIRE(system.mat == std::vector<std::vector<int64_t>> {
-            {1, 0, 0, 1, 0, -1, 2 },
-            {0, 1, 0, 0, 0, 1, 5 },
-            {0, 0, 1, 1, 0, -1, 1 },
-            {0, 0, 0, 0, 1, 1, 3 },
-        });
-        REQUIRE(system.pivots == std::vector { true, true, true, false, true, false });
-
-        auto result = system.solve(machine.buttons);
-
-        // REQUIRE(system.checkValidity(result, machine.buttons) == 0);
+        for (int64_t i = 9; i > 0; --i) {
+            REQUIRE((int64_t) (encodedJoltage >> (9 * 3)) % 512 == i);
+            m1.buttons.at(0).click(encodedJoltage);
+        }
     }
 
-    // SECTION("Part 2") {
-    //     REQUIRE(std::get<std::uint64_t>(d.part2()) == 10);
-    // }
+    SECTION("Part 2") {
+        REQUIRE(std::get<std::uint64_t>(d.part2()) == 33);
+    }
+#endif
 }

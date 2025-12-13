@@ -3,19 +3,52 @@
 #include "stc/StringUtil.hpp"
 #include <cassert>
 #include <common/Day.hpp>
+#include <limits>
+#include <queue>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
+#include <common/debug/Formatters.hpp>
+
+#if defined(__SIZEOF_INT128__) && (__SIZEOF_INT128__ == 16)
+#define HAS_128_BIT_INT
+#endif
 
 namespace aoc2025 {
+
+#ifdef HAS_128_BIT_INT
+inline __uint128_t encode(
+    __uint128_t value,
+    __uint128_t offset
+) {
+    return value << (9 * offset);
+}
+
+inline uint64_t decode(
+    __uint128_t value,
+    __uint128_t offset
+) {
+    return (uint64_t) (value >> (9 * offset)) % 512;
+}
+#endif
 
 struct Button {
     size_t mask = 0;
     std::vector<bool> maskAsArray;
+    int64_t enabled = 0;
 
-void set(size_t index) {
-        mask |= (1 << index);
+#ifdef HAS_128_BIT_INT
+    __uint128_t bigMask = 0;
+#endif
+
+    void set(size_t index) {
+        mask |= (1ull << index);
+#ifdef HAS_128_BIT_INT
+        bigMask |= encode(1, index);
+#endif
         maskAsArray.at(index) = true;
+        ++enabled;
     }
 
     bool is(size_t idx) {
@@ -26,6 +59,21 @@ void set(size_t index) {
         size_t& out
     ) {
         out ^= mask;
+    }
+#ifdef HAS_128_BIT_INT
+    void click(
+        __uint128_t& out
+    ) const {
+        out -= bigMask;
+    }
+#endif
+
+    void click(std::vector<int64_t>& joltages) const {
+        for (size_t i = 0; i < maskAsArray.size(); ++i) {
+            if (maskAsArray.at(i)) {
+                joltages.at(i) -= 1;
+            }
+        }
     }
 
     bool operator==(const Button& other) const { return mask == other.mask; }
@@ -80,165 +128,32 @@ struct UselessMachine {
     }
 };
 
-struct LinAlgSystem {
-    size_t buttonCount;
-    std::vector<int64_t> solutionsCol;
-    std::vector<std::vector<int64_t>> mat{
-        solutionsCol.size(), std::vector<int64_t> (
-            // + 1 to allow for solutions in the matrix
-            buttonCount + 1, 0
-        )
-    };
-    std::vector<bool> pivots = std::vector(mat.at(0).size() - 1, false);
-
-    void gaussEliminate() {
-        // Populate the solutions column
-        for (size_t i = 0; i < solutionsCol.size(); ++i) {
-            mat.at(i).back() = solutionsCol.at(i);
-        }
-
-        size_t pivotRow = 0;
-        size_t pivotCol = 0;
-
-        // Terminology reminders to self:
-        // mxn: m rows * n cols
-        // Translation: 
-        auto rows = mat.size();
-        auto cols = mat.at(0).size();
-        // Reorder
-        while (
-            pivotRow < rows
-            // We subtract 1 to prevent the solutions col from being eliminated, when it doesn't contain anything of 
-            // value. 
-            && pivotCol < cols
-        ) {
-            size_t iMax = 0;
-            int64_t maxElem = -1;
-            for (size_t i = pivotRow; i < rows; ++i) {
-                auto val = std::abs(mat.at(i).at(pivotCol));
-                if (val > maxElem) {
-                    maxElem = val;
-                    iMax = i;
-                }
-            }
-
-            if (mat.at(iMax).at(pivotCol) == 0) {
-                ++pivotCol;
-
-            } else {
-                auto& refPivotRow = mat.at(pivotRow);
-                std::swap(
-                    mat.at(pivotRow),
-                    mat.at(iMax)
-                );
-
-                pivots.at(pivotCol) = true;
-
-                for (size_t i = 0; i < rows; ++i) {
-                    if (i == pivotRow) {
-                        continue;
-                    }
-                    auto& rRow = mat.at(i);
-                    double m = (double) rRow.at(pivotCol) / (double) refPivotRow.at(pivotCol);
-                    // std::cout << "eliminate pivotCol=" << pivotCol  << " on " << i 
-                    //     << " using m=" << m << " and pivotRow=" << pivotRow
-                    //     << std::endl;
-                    // for (auto& row : mat) {
-                    //     for (auto& val : row) {
-                    //         std::cout << val << " ";
-                    //     }
-                    //     std::cout << std::endl;
-                    // }
-                    rRow.at(pivotCol) = 0;
-
-                    for (size_t j = pivotCol + 1; j < cols; ++j) {
-                        rRow.at(j) -= (int64_t) ((double) refPivotRow.at(j) * m);
-                    }
-                }
-
-                ++pivotRow;
-                ++pivotCol;
-            }
-        }
-    }
-
-    std::vector<int64_t> calculateHitsFor(
-        const std::unordered_map<int64_t, int64_t>& freeVars
-    ) {
-        std::vector<int64_t> unknowns(mat.at(0).size() - 1, 0);
-
-        for (auto& [idx, val] : freeVars) {
-            unknowns.at(idx) = val;
-        }
-
-        for (auto row = (int64_t) mat.size() - 1; row >= 0; --row) {
-            int64_t result = 0; 
-            for (size_t col = 0; col < unknowns.size(); ++col) {
-                result += mat.at(row).at(col) * unknowns.at(col);
-            }
-
-            unknowns[row] = mat.at(row).back() - result;
-        }
-        
-        return unknowns;
-    }
-
-    int checkValidity(const std::vector<int64_t>& sols, const std::vector<Button>& buttons) {
-        if (sols.size() == 0) {
-            throw std::runtime_error("Fuck you");
-        }
-        std::vector<int64_t> answers(buttons.size());
-        for (size_t j = 0; j < sols.size(); ++j) {
-            auto& button = buttons.at(j);
-            for (size_t i = 0; i < button.maskAsArray.size(); ++i) {
-                auto it = button.maskAsArray.at(i);
-                answers.at(i) += ((int64_t) it) * sols.at(j);
-                std::cout << i << "=" << sols.at(i) << std::endl;
-            }
-        }
-        bool equals = true;
-        for (size_t i = 0; i < answers.size(); ++i) {
-            std::cout << answers.at(i) << " " <<  std::endl;
-            if (answers.at(i) != solutionsCol.at(i)) {
-                equals = false;
-            } else if (answers.at(i) > solutionsCol.at(i)) {
-                // Answer exceeds the solution, and the solution is unsolvable.
-                return -1;
-            }
-        }
-        return equals ? 0 : 1;
-    }
-
-    std::vector<int64_t> solve(
-        const std::vector<Button>& buttons
-    ) {
-
-        std::vector<int64_t> freeVars;
-        for (size_t i = 0; i < pivots.size(); ++i) {
-            if (!pivots.at(i)) {
-                freeVars.push_back((int64_t) i);
-            }
-        }
-
-        std::vector<int64_t> bestSolution;
-        size_t bestSum = 0;
-
-        if (freeVars.size() == 0) {
-            return calculateHitsFor({});
-        } else {
-            if (buttons.size() == 0) {
-                throw std::runtime_error("Resolved  freeVars.size() > 0, but no buttons provided");
-            }
-            while (true) {
-                break;
-            }
-        }
-
-        
-
-        return bestSolution;
-    }
+struct ButtonConstraints {
+    int64_t maxPresses;
 };
+
+#ifdef HAS_128_BIT_INT
+struct SearchContext {
+    __uint128_t joltages;
+    std::vector<bool> enabledButtons;
+    std::vector<int64_t> buttonPresses;
+    __uint128_t path = 0;
+
+    int64_t accumulatedClicks = 0;
+};
+
+struct SystemState {
+    const int64_t systemJoltage;
+    const std::vector<std::vector<size_t>> joltageToButtonMap;
+    const std::vector<Button> buttons;
+    const std::vector<ButtonConstraints> constraints;
+    const std::vector<int64_t> minCostForJoltage;
+    const size_t joltageCounts;
+    
+    std::unordered_set<__uint128_t> visited;
+    int64_t minCost = std::numeric_limits<int64_t>::max();
+};
+#endif
 
 class Day10 : public common::Day {
 public:
@@ -246,17 +161,22 @@ public:
 
     DECLARE_DAY(2025, 10);
 
-    void assembleSystem(
-        LinAlgSystem& sys,
-        const std::vector<Button>& buttons
-    );
-
     void parse() override;
     common::Output part1() override;
     common::Output part2() override;
 
-    bool p2borked() override { return true; }
+#ifdef HAS_128_BIT_INT
+    void directedDfsAStarThing(
+        const SearchContext& searchState,
+        SystemState& systemState
+    );
+#endif
 
+    bool isButtonEnabled(
+        __uint128_t joltages,
+        size_t joltageCounts,
+        const Button& b
+    );
 };
 
 }
