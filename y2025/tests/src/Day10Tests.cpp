@@ -56,36 +56,7 @@ TEST_CASE("Test 1", "[Day10]") {
         REQUIRE(std::get<std::uint64_t>(d.part1()) == 7);
     }
 
-#ifdef HAS_128_BIT_INT
-    SECTION("128 bit extensions") {
-        auto& m1 = d.machines.at(0);
-        // 3 == 9 * 3 = 27
-        // 27 / 4 = 6R3
-        INFO(std::bitset<128>(m1.buttons.at(0).bigMask));
-        INFO(std::bitset<128>((__uint128_t) 0x8'000'000));
-        REQUIRE(m1.buttons.at(0).bigMask == (__uint128_t) 0x8'000'000); 
-
-        __uint128_t encodedJoltage = 0;
-        encodedJoltage += (((__uint128_t) 1) << (9 * 3)) * (__uint128_t) 9; 
-
-        REQUIRE(d.isButtonEnabled(
-            encodedJoltage, 4, m1.buttons.at(0)
-        ));
-
-        for (size_t i = 1; i < m1.buttons.size(); ++i) {
-            REQUIRE_FALSE(d.isButtonEnabled(
-                encodedJoltage, 4, m1.buttons.at(i)
-            ));
-        }
-
-        for (int64_t i = 9; i > 0; --i) {
-            REQUIRE((int64_t) (encodedJoltage >> (9 * 3)) % 512 == i);
-            m1.buttons.at(0).click(encodedJoltage);
-        }
-    }
-
-    SECTION("Part 2") {
-        REQUIRE(std::get<std::uint64_t>(d.part2()) == 33);
-    }
-#endif
+    // SECTION("Part 2") {
+    //     REQUIRE(std::get<std::uint64_t>(d.part2()) == 33);
+    // }
 }

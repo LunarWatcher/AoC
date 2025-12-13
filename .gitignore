@@ -1,3 +1,6 @@
+# Python venv (stored globally because editor struggles otherwise)
+/env/
+
 .cache
 .ccls-cache
 
