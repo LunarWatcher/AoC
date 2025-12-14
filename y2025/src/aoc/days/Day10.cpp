@@ -1,8 +1,10 @@
 #include "Day10.hpp"
 #include "common/loader/Loader.hpp"
 #include <cstdint>
+#include <limits>
 #include <queue>
 #include <unordered_set>
+#include <Eigen/Dense>
 
 namespace aoc2025 {
 
@@ -63,7 +65,41 @@ done:;
 }
 
 common::Output Day10::part2() {
-    return "Not implemented";
+    using Fuck = Eigen::Index;
+    uint64_t sum = 0;
+    for (auto& [_, buttons, joltages] : machines) {
+        Eigen::MatrixXd A(
+            (Fuck) joltages.size(), 
+            (Fuck) buttons.size()
+        );
+        A.setZero();
+        Eigen::VectorXd b(
+            (Fuck) joltages.size()
+        );
+        b.setZero();
+        for (size_t j = 0; j < joltages.size(); ++j) {
+            b((Fuck) j) = (double) joltages.at(j);
+            for (size_t i = 0; i < buttons.size(); ++i) {
+                auto& button = buttons.at(i);
+                A((Fuck) j, (Fuck) i) = (double) button.is(j);
+            }
+        }
+        auto fuckKnows = 
+            A
+            .fullPivLu();
+        decltype(b) intermediateResult = fuckKnows.solve(b);
+        
+        // std::cout << kernel << std::endl << std::endl;
+        // std::cout << b << std::endl << std::endl;
+        // std::cout << A << std::endl << std::endl;
+        // std::cout << intermediateResult << std::endl << std::endl;
+        // std::cout << "Done: " << std::endl << intermediateResult << std::endl << std::endl;
+        for (auto& r : intermediateResult) {
+            sum += (int64_t) r;
+        }
+
+    }
+    return sum;
 }
 
 }
