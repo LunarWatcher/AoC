@@ -2,6 +2,7 @@ add_library(
     aoc-common
 STATIC
     src/common/Runner.cpp
+    src/common/fuckingmathbullshit/EqSystem.cpp
 )
 target_include_directories(
     aoc-common

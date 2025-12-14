@@ -24,7 +24,6 @@ common::Output Day10::part1() {
             }
         };
 
-
         std::unordered_set<size_t> searchedStates;
         std::optional<std::pair<uint64_t, size_t>> match;
         while (q.size()) {
@@ -64,36 +63,41 @@ done:;
 }
 
 void Day10::assembleSystem(
-    LinAlgSystem& sys,
+    common::EqSystem& sys,
     const std::vector<Button>& buttons
 ) {
     // Assemble the system
     for (size_t i = 0; i < buttons.size(); ++i) {
         auto& button = buttons.at(i);
         for (size_t j = 0; j < button.maskAsArray.size(); ++j) {
-            sys.mat.at(j).at(i) = button.maskAsArray.at(j) ? 1 : 0;
+            sys(j, i) = (int64_t) button.maskAsArray.at(j);
         }
     }
 }
 
 common::Output Day10::part2() {
     uint64_t sum = 0;
-    return sum;
 
     for (auto& [_, buttons, joltages] : machines) {
-        LinAlgSystem system {
-            .buttonCount = buttons.size(),
-            .solutionsCol = joltages
+        common::EqSystem system {
+            buttons.size(),
+            joltages
         };
         assembleSystem(system, buttons);
 
         system.gaussEliminate();
-        auto res = system.solve(buttons);
-        sum += std::accumulate(
+        std::cout << system << "\n\n";
+        auto res = system.solveForSmallestTotalWithMinConstraints(
+            0
+        );
+        auto presses = std::accumulate(
             res.begin(),
             res.end(),
             0ll
         );
+
+        std::cout << "System requires " << presses << std::endl;
+        sum += presses;
     }
     
     return sum;
