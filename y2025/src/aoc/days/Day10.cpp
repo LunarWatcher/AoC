@@ -1,10 +1,8 @@
 #include "Day10.hpp"
 #include "common/loader/Loader.hpp"
-#include <cstdint>
-#include <limits>
+#include <numeric>
 #include <queue>
 #include <unordered_set>
-#include <Eigen/Dense>
 
 namespace aoc2025 {
 
@@ -59,46 +57,45 @@ common::Output Day10::part1() {
         }
 done:;
         sum += match->first;
+
     }
     
     return sum;
 }
 
-common::Output Day10::part2() {
-    using Fuck = Eigen::Index;
-    uint64_t sum = 0;
-    for (auto& [_, buttons, joltages] : machines) {
-        Eigen::MatrixXd A(
-            (Fuck) joltages.size(), 
-            (Fuck) buttons.size()
-        );
-        A.setZero();
-        Eigen::VectorXd b(
-            (Fuck) joltages.size()
-        );
-        b.setZero();
-        for (size_t j = 0; j < joltages.size(); ++j) {
-            b((Fuck) j) = (double) joltages.at(j);
-            for (size_t i = 0; i < buttons.size(); ++i) {
-                auto& button = buttons.at(i);
-                A((Fuck) j, (Fuck) i) = (double) button.is(j);
-            }
+void Day10::assembleSystem(
+    LinAlgSystem& sys,
+    const std::vector<Button>& buttons
+) {
+    // Assemble the system
+    for (size_t i = 0; i < buttons.size(); ++i) {
+        auto& button = buttons.at(i);
+        for (size_t j = 0; j < button.maskAsArray.size(); ++j) {
+            sys.mat.at(j).at(i) = button.maskAsArray.at(j) ? 1 : 0;
         }
-        auto fuckKnows = 
-            A
-            .fullPivLu();
-        decltype(b) intermediateResult = fuckKnows.solve(b);
-        
-        // std::cout << kernel << std::endl << std::endl;
-        // std::cout << b << std::endl << std::endl;
-        // std::cout << A << std::endl << std::endl;
-        // std::cout << intermediateResult << std::endl << std::endl;
-        // std::cout << "Done: " << std::endl << intermediateResult << std::endl << std::endl;
-        for (auto& r : intermediateResult) {
-            sum += (int64_t) r;
-        }
-
     }
+}
+
+common::Output Day10::part2() {
+    uint64_t sum = 0;
+    return sum;
+
+    for (auto& [_, buttons, joltages] : machines) {
+        LinAlgSystem system {
+            .buttonCount = buttons.size(),
+            .solutionsCol = joltages
+        };
+        assembleSystem(system, buttons);
+
+        system.gaussEliminate();
+        auto res = system.solve(buttons);
+        sum += std::accumulate(
+            res.begin(),
+            res.end(),
+            0ll
+        );
+    }
+    
     return sum;
 }
 

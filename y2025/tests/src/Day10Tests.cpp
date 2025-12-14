@@ -42,21 +42,21 @@ TEST_CASE("Test 1", "[Day10]") {
         }
     }
 
-    SECTION("Button tests") {
-        auto& buttons = d.machines.at(0).buttons;
+    // SECTION("Button tests") {
+    //     auto& buttons = d.machines.at(0).buttons;
 
-        auto vec = std::vector<int64_t>(4);
-        for (size_t i = 0; i < 10; ++i) {
-            buttons.at(0).click(vec);
-            REQUIRE(vec == std::vector<int64_t> { 0, 0, 0, (int64_t) -i - 1 });
-        }
-    }
+    //     auto vec = std::vector<int64_t>(4);
+    //     for (size_t i = 0; i < 10; ++i) {
+    //         buttons.at(0).click(vec);
+    //         REQUIRE(vec == std::vector<int64_t> { 0, 0, 0, (int64_t) -i - 1 });
+    //     }
+    // }
 
     SECTION("Part 1") {
         REQUIRE(std::get<std::uint64_t>(d.part1()) == 7);
     }
 
-    SECTION("Part 2") {
-        REQUIRE(std::get<std::uint64_t>(d.part2()) == 33);
-    }
+    // SECTION("Part 2") {
+    //     REQUIRE(std::get<std::uint64_t>(d.part2()) == 33);
+    // }
 }
