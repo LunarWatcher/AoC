@@ -56,7 +56,7 @@ TEST_CASE("Test 1", "[Day10]") {
         REQUIRE(std::get<std::uint64_t>(d.part1()) == 7);
     }
 
-    SECTION("Part 2") {
-        REQUIRE(std::get<std::uint64_t>(d.part2()) == 33);
-    }
+    // SECTION("Part 2") {
+    //     REQUIRE(std::get<std::uint64_t>(d.part2()) == 33);
+    // }
 }

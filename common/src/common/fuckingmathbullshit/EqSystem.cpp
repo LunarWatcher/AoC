@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <numeric>
 #include <queue>
 
 namespace common {
@@ -42,7 +43,7 @@ void EqSystem::gaussEliminate() {
         pivotRow < rows
         // We subtract 1 to prevent the solutions col from being eliminated, when it doesn't contain anything of 
         // value. 
-        && pivotCol < cols
+        && pivotCol < cols - 1
     ) {
         size_t iMax = 0;
         int64_t maxElem = -1;
@@ -56,12 +57,6 @@ void EqSystem::gaussEliminate() {
 
         if (mat.at(iMax).at(pivotCol) == 0) {
             ++pivotCol;
-
-            // All-zero row, so we need to avoid pushing the pivots into the solutions column
-            if (pivotCol == variables) {
-                break;
-            }
-
         } else {
             auto& refPivotRow = mat.at(pivotRow);
             std::swap(
@@ -71,15 +66,13 @@ void EqSystem::gaussEliminate() {
 
             pivots.at(pivotRow) = pivotCol;
 
-            for (size_t i = 0; i < rows; ++i) {
+            for (size_t i = pivotRow + 1; i < rows; ++i) {
                 if (i == pivotRow) {
                     continue;
                 }
                 auto& rRow = mat.at(i);
-                // TODO: do I want a double intermediate, or is integer division fine for an integer system?
-                // This will likely cause problems with the next line though, as it sets something to 0 that it might
-                // not be able to justify
-                double m = (double) rRow.at(pivotCol) / (double) refPivotRow.at(pivotCol);
+
+                // double m = (double) rRow.at(pivotCol) / (double) refPivotRow.at(pivotCol);
                 // std::cout << "eliminate pivotCol=" << pivotCol  << " on " << i 
                 //     << " using m=" << m << " and pivotRow=" << pivotRow
                 //     << std::endl;
@@ -89,11 +82,29 @@ void EqSystem::gaussEliminate() {
                 //     }
                 //     std::cout << std::endl;
                 // }
-                rRow.at(pivotCol) = 0;
-
-                for (size_t j = pivotCol + 1; j < cols; ++j) {
-                    rRow.at(j) -= (int64_t) ((double) refPivotRow.at(j) * m);
+                // rRow.at(pivotCol) = 0;
+                auto a = rRow.at(pivotCol);
+                if (a == 0) {
+                    continue;
                 }
+                auto b = refPivotRow.at(pivotCol);
+
+                auto l = std::lcm(a, b);
+                mult(
+                    rRow,
+                    l / b
+                );
+                auto refPivotRowCopy = refPivotRow;
+                mult(
+                    refPivotRowCopy,
+                    l / a
+                );
+
+                sub(
+                    rRow,
+                    refPivotRowCopy
+                );
+
             }
 
             ++pivotRow;
@@ -293,6 +304,24 @@ std::ostream& operator<<(std::ostream& ss, const EqSystem& system) {
         ss << "\n";
     }
     return ss << "]\n";
+}
+
+void EqSystem::sub(
+    std::vector<int64_t>& lhs,
+    std::vector<int64_t>& rhs
+) {
+    for (size_t i = 0; i < lhs.size(); ++i) {
+        lhs.at(i) -= rhs.at(i);
+    }
+}
+
+void EqSystem::mult(
+    std::vector<int64_t>& lhs,
+    int64_t val
+) {
+    for (auto& v : lhs) {
+        v *= val;
+    }
 }
 
 }

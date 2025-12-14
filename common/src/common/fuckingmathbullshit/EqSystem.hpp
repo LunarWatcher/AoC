@@ -40,6 +40,15 @@ private:
     const size_t variables;
     size_t pivotVariables = 0;
 
+    void sub(
+        std::vector<int64_t>& lhs,
+        std::vector<int64_t>& rhs
+    );
+    void mult(
+        std::vector<int64_t>& lhs,
+        int64_t val
+    );
+
     int64_t sum(
         const std::vector<IntermediateEquation>& eq,
         const std::unordered_map<size_t, int64_t>& freeVariables

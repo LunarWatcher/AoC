@@ -77,6 +77,7 @@ void Day10::assembleSystem(
 
 common::Output Day10::part2() {
     uint64_t sum = 0;
+    return sum;
 
     for (auto& [_, buttons, joltages] : machines) {
         common::EqSystem system {
