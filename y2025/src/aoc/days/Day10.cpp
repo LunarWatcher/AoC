@@ -1,11 +1,10 @@
 #include "Day10.hpp"
-#include "common/loader/Loader.hpp"
-#include <bitset>
 #include <common/debug/Formatters.hpp>
+#include "common/loader/Loader.hpp"
+#include "common/math/VecN.hpp"
 #include <limits>
+#include <numeric>
 #include <queue>
-#include <set>
-#include <type_traits>
 #include <unordered_set>
 
 namespace aoc2025 {
@@ -51,6 +50,8 @@ common::Output Day10::part1() {
 
                 q.push({ click, state });
             }
+
+
         }
 
         if (!match.has_value()) {
@@ -58,6 +59,7 @@ common::Output Day10::part1() {
         }
 done:;
         sum += match->first;
+
     }
     
     return sum;
@@ -76,137 +78,115 @@ void Day10::assembleSystem(
     }
 }
 
-uint64_t Day10::recursivelyPressButtons(
-    const std::unordered_map<size_t, std::set<std::set<size_t>>>& parityPaths,
-    const std::vector<Button>& buttons,
-    const std::vector<int64_t>& joltages
-) {
-    bool isDone = true;
-    for (auto& joltage : joltages) {
-        if (joltage < 0) {
-            return std::numeric_limits<uint64_t>::max();
-        } else if (joltage != 0) {
-            isDone = false;
-        }
-    }
-    if (isDone) {
-        return 0;
-    }
-    size_t currParity = 0;
-    for (size_t i = 0; i < joltages.size(); ++i) {
-        currParity |= ((size_t) (joltages.at(i) % 2 != 0)) << i;
-    }
-    std::cout << joltages << std::endl;
-    std::cout << parityPaths.at(currParity) << std::endl;
-    auto& paths = parityPaths.at(currParity);
-    uint64_t out = std::numeric_limits<uint64_t>::max();
-    for (auto& path : paths) {
-        auto newJoltages = joltages;
-        // if (buttons.at(btnIdx).maxPresses(newJoltages) == 0) {
-        //     goto bad;
-        // }
-        for (auto& btnIdx : path) {
-            if (buttons.at(btnIdx).maxPresses(joltages) == 0) {
-                goto bad;
-            }
-            buttons.at(btnIdx).click(newJoltages, 1);
-        }
-        {
-            auto min = std::min_element(
-                newJoltages.begin(), newJoltages.end()
-            );
-            auto max = std::max_element(
-                newJoltages.begin(), newJoltages.end()
-            );
-
-            // TODO: This should not be necessary: maxPresses() is supposed to guard from negative clicks, but it isn't.
-            if (*min < 0) {
-                continue;
-            } else if (*min == 0 && *max == 0) {
-                out = std::min(out, path.size());
-                continue;
-            }
-
-            std::cout << "Dividing" << newJoltages << std::endl;
-            size_t mult = 1;
-            if (*min > 0) {
-                bool hasMore = true;
-                while (hasMore) {
-                    for (auto& joltage : newJoltages) {
-                        joltage /= 2;
-                        if (joltage % 2 != 0) {
-                            hasMore = false;
-                        }
-                    }
-                    mult *= 2;
-                }
-            }
-            // std::cout << "Recurse " << newJoltages << " from click " << path << std::endl;
-            auto val = recursivelyPressButtons(
-                parityPaths,
-                buttons,
-                newJoltages
-            );
-            if (val == std::numeric_limits<uint64_t>::max()) {
-                return val;
-            }
-            out = std::min(out, mult * val + path.size());
-        }
-bad:
-    }
-    return out;
-}
-std::unordered_map<size_t, std::set<std::set<size_t>>> Day10::findAllPaths(
-    const std::vector<Button>& buttons
-) {
-    size_t possibilities = 1;
-
-    for (size_t i = 0; i < buttons.size(); ++i) {
-        possibilities *= 2;
-    }
-    
-    std::unordered_map<size_t, std::set<std::set<size_t>>> out;
-    // We skip i = 0 because 0 buttons enabled is pointless
-    for (size_t i = 1; i < possibilities; ++i) {
-        std::set<size_t> enabled;
-        for (size_t j = 0; j < buttons.size(); ++j) {
-            if ((i >> j) % 2 == 1) {
-                enabled.insert(j);
-            }
-        }
-        size_t state = 0;
-        for (auto& j : enabled) {
-            buttons.at(j).click(state);
-        }
-
-        out[state].insert(enabled);
-    }
-
-    return out;
-}
-
 common::Output Day10::part2() {
     uint64_t sum = 0;
 
-    size_t machineIdx = 0;
-    for (const auto& [_, buttons, joltages] : machines) {
-        std::cout << "Now processing " << machineIdx << std::endl;
+    size_t processed = 0;
+    for (auto& [_, buttons, joltages] : machines) {
+        std::cout << "Now running " << processed++ << std::endl;
+        // common::EqSystem system {
+        //     buttons.size(),
+        //     joltages
+        // };
+        // assembleSystem(system, buttons);
 
-        auto paths = findAllPaths(
-            buttons
-        );
-        auto res = recursivelyPressButtons(
-            paths,
-            buttons,
-            joltages
-        );
-        std::cout << "ADD " << res << std::endl;
-        if (res == std::numeric_limits<uint64_t>::max()) {
-            throw std::runtime_error("Idiot");
+        // system.gaussEliminate();
+        // std::cout << system << "\n\n";
+        // auto res = system.solveForSmallestTotalWithMinConstraints(
+        //     0
+        // );
+        // auto presses = std::accumulate(
+        //     res.begin(),
+        //     res.end(),
+        //     0ll
+        // );
+
+        // std::cout << "System requires " << presses << std::endl;
+        // sum += presses;
+        
+        std::cout << joltages << std::endl;
+        std::vector<common::VecN<int64_t>> buttonVectors;
+        for (auto& button : buttons) {
+            std::vector<int64_t> values(joltages.size(), 0);
+
+            for (size_t i = 0; i < joltages.size(); ++i) {
+                if (button.is(i)) {
+                    values.at(i) = 1;
+                }
+            }
+
+            buttonVectors.push_back({
+                values
+            });
         }
-        sum += res;
 
-        ++machineIdx;
+        common::VecN<int64_t> target {
+            joltages
+        };
+        uint64_t maxJoltage = std::accumulate(
+            joltages.begin(), joltages.end(), 0ll
+        );
+
+        auto cmp = [&](const SearchData& a, const SearchData& b) {
+            if (a.position.values.size() != b.position.values.size()) {
+                [[unlikely]]
+                return false;
+            }
+            return 
+                a.position.euclidean(target) > b.position.euclidean(target)
+                || a.buttonPresses < b.buttonPresses;
+        };
+        std::priority_queue<SearchData, std::vector<SearchData>, decltype(cmp)> q(cmp);
+
+        for (auto& vector : buttonVectors) {
+            // std::cout << "APPEND " << vector.values << std::endl;
+            q.push(SearchData {
+                .position = vector,
+                .buttonPresses = 1
+            });
+        }
+
+        uint64_t min = std::numeric_limits<uint64_t>::max();
+        // std::cout << "NEW" << std::endl;
+
+        while (q.size() > 0) {
+            auto [ position, currPresses ] = q.top();
+            q.pop();
+
+
+            if (position == target) {
+                min = std::min(currPresses, min);
+                break;
+            }
+
+            auto currDist = position.euclidean(target);
+
+            for (size_t i = 0; i < buttonVectors.size(); ++i) {
+                auto& next = buttonVectors.at(i);
+                auto presses = currPresses + 1;
+                if (presses > min || presses > maxJoltage) {
+                    continue;
+                }
+
+                auto newPos = position + next;
+
+                if (newPos.euclidean(target) > currDist) {
+                    continue;
+                }
+
+                for (size_t i = 0; i < target.values.size(); ++i) {
+                    if (newPos.values.at(i) > target.values.at(i)) {
+                        goto bad;
+                    }
+                }
+                
+                q.push({newPos, presses });
+bad:
+            }
+        }
+
+        // std::cout << "ADD " << min << std::endl;
+        sum += min;
     }
     
     return sum;
