@@ -4,6 +4,8 @@
 #include "stc/StringUtil.hpp"
 #include <cassert>
 #include <common/Day.hpp>
+#include <limits>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -21,16 +23,42 @@ struct Button {
         ++targets;
     }
 
-    bool is(size_t idx) {
+    bool is(size_t idx) const {
         return (mask & (1 << idx)) != 0;
     }
 
     void click(
         size_t& out
-    ) {
+    ) const {
         out ^= mask;
     }
+    void click(
+        std::vector<int64_t>& joltages,
+        int64_t clicks
+    ) const {
+        for (size_t i = 0; i < joltages.size(); ++i) {
+            if (is(i)) {
+                joltages.at(i) -= clicks;
+            }
+        }
+    }
 
+    int64_t maxPresses(
+        const std::vector<int64_t>& joltages
+    ) const {
+        int64_t maxPresses = std::numeric_limits<int64_t>::max();
+        for (size_t i = 0; i < joltages.size(); ++i) {
+            if (is(i)) {
+                auto& joltage = joltages.at(i);
+                if (joltage <= 0) { return 0; }
+                maxPresses = std::min(
+                    maxPresses, joltage
+                );
+            }
+        }
+        return maxPresses;
+    }
+    
     bool operator==(const Button& other) const { return mask == other.mask; }
 };
 
@@ -98,8 +126,16 @@ public:
     common::Output part1() override;
     common::Output part2() override;
 
-    bool p2borked() override { return true; }
+    std::unordered_map<size_t, std::set<std::set<size_t>>> findAllPaths(
+        const std::vector<Button>& buttons
+    );
+    uint64_t recursivelyPressButtons(
+        const std::unordered_map<size_t, std::set<std::set<size_t>>>& parityPaths,
+        const std::vector<Button>& buttons,
+        const std::vector<int64_t>& joltages
+    );
 
+    bool p2borked() override { return true; }
 };
 
 }

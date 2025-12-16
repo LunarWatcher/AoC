@@ -1,6 +1,8 @@
 #include "aoc/days/Day10.hpp"
 #include <bitset>
+#include <common/debug/Formatters.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <cstdint>
 
 using namespace aoc2025;
 
@@ -42,21 +44,43 @@ TEST_CASE("Test 1", "[Day10]") {
         }
     }
 
-    // SECTION("Button tests") {
-    //     auto& buttons = d.machines.at(0).buttons;
-
-    //     auto vec = std::vector<int64_t>(4);
-    //     for (size_t i = 0; i < 10; ++i) {
-    //         buttons.at(0).click(vec);
-    //         REQUIRE(vec == std::vector<int64_t> { 0, 0, 0, (int64_t) -i - 1 });
-    //     }
+    // SECTION("Possibilities tests") {
+    //     auto& m0 = d.machines.at(0);
+    //     auto solutions = d.findAllPaths(
+    //         m0.buttons,
+    //         m0.joltages
+    //     );
+    //     INFO(solutions);
+    //     REQUIRE(
+    //         solutions
+    //         ==
+    //         std::set<std::set<size_t>> { 
+    //             { 0, 5 },
+    //             { 1, 2, 4 },
+    //             { 2, 3, 5 },
+    //             { 0, 1, 3, 4 }
+    //         }
+    //     );
     // }
+
+    SECTION("Button tests") {
+        auto& buttons = d.machines.at(0).buttons;
+
+        auto vec = std::vector<int64_t>(4);
+        for (size_t i = 0; i < 10; ++i) {
+            buttons.at(0).click(vec, 1);
+            REQUIRE(vec == std::vector<int64_t> { 0, 0, 0, (int64_t) -i - 1 });
+        }
+
+        buttons.at(0).click(vec, 100);
+        REQUIRE(vec == std::vector<int64_t> { 0, 0, 0, (int64_t) -110 });
+    }
 
     SECTION("Part 1") {
         REQUIRE(std::get<std::uint64_t>(d.part1()) == 7);
     }
 
-    // SECTION("Part 2") {
-    //     REQUIRE(std::get<std::uint64_t>(d.part2()) == 33);
-    // }
+    SECTION("Part 2") {
+        REQUIRE(std::get<std::uint64_t>(d.part2()) == 33);
+    }
 }
