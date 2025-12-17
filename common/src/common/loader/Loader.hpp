@@ -126,29 +126,31 @@ std::vector<std::vector<T>> loadMap(
 }
 
 template <typename T>
-std::vector<std::pair<int64_t, int64_t>> loadSimpleMap(
+std::vector<T> loadMapAsObjectList(
     const std::filesystem::path& input,
-    std::function<T(char)> parser
+    std::function<bool(char)> parser
 ) {
     std::ifstream f(input);
     if (!f) {
         throw std::runtime_error("Failed to find " + input.string());
     }
 
-    std::vector<std::vector<T>> out;
-    std::vector<T> line;
+    std::vector<T> out;
     char ch;
+    size_t x = 0, y = 0;
     while (f >> ch) {
-        line.push_back(parser(ch));
+        if (parser(ch)) {
+            out.push_back(T(x, y));
+        }
         if (f.peek() == '\n') {
-            out.push_back(line);
-            line.clear();
+            ++y;
+            x = 0;
             f.ignore();
+        } else {
+            ++x;
         }
     }
-    if (!line.empty()) {
-        out.push_back(line);
-    }
+
     return out;
 }
 

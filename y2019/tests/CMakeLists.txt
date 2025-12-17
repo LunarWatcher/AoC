@@ -8,6 +8,8 @@ add_executable(tests-2019
     src/Day7Tests.cpp
     src/Day8Tests.cpp
 
+    src/Day10Tests.cpp
+
     src/IntCodeTests.cpp
 
     # Exists to allow for improvements without needing to manually check new answers.
