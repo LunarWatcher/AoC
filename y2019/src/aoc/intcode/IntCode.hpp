@@ -15,34 +15,69 @@ struct Opcode4 {
 
 struct Program {
     std::vector<int64_t> ram;
+    int64_t relativeBase = 0;
 
     int64_t resolveReference(
         size_t addr
-    ) const {
-        return ram.at(ram.at(addr));
+    ) {
+        return at(at(addr));
     }
 
     int64_t resolveImmediateMode(
         size_t addr
-    ) const {
+    ) {
         return ram.at(addr);
+    }
+
+    int64_t resolveRelativeMode(
+        size_t addr
+    ) {
+        auto target = relativeBase + resolveImmediateMode(addr);
+        ensureSpace(target);
+        return resolveImmediateMode(
+            target
+        );
+    }
+
+    int64_t resolveImmRelMode(
+        int64_t mode,
+        size_t addr
+    ) {
+        if (mode == 0) {
+            return resolveImmediateMode(addr);
+        } else if (mode == 2) {
+            return relativeBase + resolveImmediateMode(addr);
+        } else {
+            throw std::runtime_error("Bad girl");
+        }
+    }
+
+    void ensureSpace(size_t addr) {
+        if (ram.size() <= addr) {
+            this->ram.resize(addr + 1);
+        }
     }
 
     int64_t resolve(
         int64_t mode,
         size_t addr
-    ) const {
+    ) {
         if (mode == 0) {
             return resolveReference(addr);
         } else if (mode == 1) {
             return resolveImmediateMode(addr);
+        } else if (mode == 2) {
+            return resolveRelativeMode(addr);
         } else {
             [[unlikely]]
             throw std::runtime_error("Unrecognised mode: " + std::to_string(addr));
         }
     }
 
-    int64_t& at(size_t n) { return ram.at(n); }
+    int64_t& at(size_t addr) {
+        ensureSpace(addr);
+        return ram.at(addr); 
+    }
 };
 
 struct StdStream {
@@ -59,7 +94,7 @@ struct StdStream {
 class IntCode {
 private:
     Opcode4 resolveOp4(
-        const Program& ram,
+        Program& ram,
         size_t opcodeAddr
     );
 
@@ -73,10 +108,6 @@ public:
 
     IntCode() = default;
     IntCode(const Program& prog);
-
-
-    int64_t resolveReference(const Program& ram, size_t addr);
-    int64_t resolveImmediateMode(const Program& ram, size_t addr);
 
     int64_t resolveMode(int64_t rawOp, short parameterIdx);
 

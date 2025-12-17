@@ -21,7 +21,7 @@ void IntCode::recode(
 }
 
 Opcode4 IntCode::resolveOp4(
-    const Program& ram,
+    Program& ram,
     size_t opcodeAddr
 ) {
     // TODO: I'm not happy that these are chained like this. Maybe it makes sense to add some form of helper struct?
@@ -48,19 +48,19 @@ int64_t IntCode::run() {
         case 1: {
             auto val1 = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
             auto val2 = ram.resolve(resolveMode(rawOp, 1), ptr + 2);
-            auto dest = ram.resolveImmediateMode(ptr + 3);
+            auto dest = ram.resolveImmRelMode(resolveMode(rawOp, 2), ptr + 3);
             ram.at(dest) = val1 + val2;
             ptr += 4;
         } break;
         case 2: {
             auto val1 = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
             auto val2 = ram.resolve(resolveMode(rawOp, 1), ptr + 2);
-            auto dest = ram.resolveImmediateMode(ptr + 3);
+            auto dest = ram.resolveImmRelMode(resolveMode(rawOp, 2), ptr + 3);
             ram.at(dest) = val1 * val2;
             ptr += 4;
         } break;
         case 3: {
-            auto dest = ram.resolveImmediateMode(ptr + 1);
+            auto dest = ram.resolveImmRelMode(resolveMode(rawOp, 0), ptr + 1);
             ram.at(dest) = input.next();
             ptr += 2;
         } break;
@@ -93,16 +93,25 @@ int64_t IntCode::run() {
         case 7: {
             auto val1 = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
             auto val2 = ram.resolve(resolveMode(rawOp, 1), ptr + 2);
-            auto dest = ram.resolveImmediateMode(ptr + 3);
+            auto dest = ram.resolveImmRelMode(resolveMode(rawOp, 2), ptr + 3);
             ram.at(dest) = (int64_t) val1 < val2;
             ptr += 4;
         } break;
         case 8: {
             auto val1 = ram.resolve(resolveMode(rawOp, 0), ptr + 1);
             auto val2 = ram.resolve(resolveMode(rawOp, 1), ptr + 2);
-            auto dest = ram.resolveImmediateMode(ptr + 3);
+            auto dest = ram.resolveImmRelMode(resolveMode(rawOp, 2), ptr + 3);
             ram.at(dest) = (int64_t) val1 == val2;
             ptr += 4;
+        } break;
+
+        case 9: {
+            auto val = ram.resolve(
+                resolveMode(rawOp, 0), ptr + 1
+            );
+            ram.relativeBase += val;
+            ram.ensureSpace(ram.relativeBase);
+            ptr += 2;
         } break;
 
         case 99:

@@ -51,3 +51,28 @@ TEST_CASE("Day 5 part 2 features", "[IntCode]") {
         REQUIRE(computer.diagnostic() == 999);
     }
 }
+
+TEST_CASE("Relative mode") {
+    SECTION("Small case") {
+        aoc2019::IntCode computer {
+            aoc2019::Program { { 104,1125899906842624ll,99 } }
+        };
+        computer.run();
+        REQUIRE(computer.diagnostic() == 1125899906842624ll);
+    }
+    SECTION("Quine") {
+        std::vector<int64_t> program = { 109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99 };
+        aoc2019::IntCode computer {
+            aoc2019::Program {
+                program
+            }
+        };
+
+        computer.runUntilHalted();
+
+        auto output = computer.output.data;
+        REQUIRE(output.size() == program.size());
+        REQUIRE(output == program);
+
+    }
+}
