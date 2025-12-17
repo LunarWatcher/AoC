@@ -3,6 +3,7 @@
 #include <vector>
 #include <set>
 #include <ostream>
+#include <unordered_map>
 
 // TODO: these really should be std::format, but std::formatter is being a pile of shit and I cannot be bothered dealing
 // with it right now
@@ -15,6 +16,23 @@ std::ostream& operator<<(std::ostream& ss, const std::vector<T, Alloc>& vec) {
             ss << ", ";
         }
         ss << vec.at(i);
+    }
+    ss << "]";
+    return ss;
+}
+
+// TODO: this does not link
+template <typename T, typename V>
+std::ostream& operator<<(std::ostream& ss, const std::unordered_map<T, V>& map) {
+    ss << "[";
+    size_t i = 0;
+    for (const auto& [k, v] : map) {
+        if (i != 0) {
+            ss << ", ";
+        }
+        ++i;
+        ss << k << " : " << v;
+        
     }
     ss << "]";
     return ss;

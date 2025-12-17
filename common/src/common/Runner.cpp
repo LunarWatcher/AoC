@@ -3,6 +3,11 @@
 #include <iostream>
 #include <stc/Colour.hpp>
 
+#if __has_include(<sys/resource.h>)
+#include <sys/resource.h>
+#define HAS_ULIMIT
+#endif
+
 namespace common {
 
 double Runner::runPart(
@@ -72,6 +77,32 @@ void Runner::run(
     int year, 
     const DayList& implementedDays
 ) {
+#ifdef HAS_ULIMIT
+    rlimit r {
+        .rlim_cur = 
+            // 1 KiB
+            1024ll
+            // 1 MiB
+            * 1024ll
+            // 1 GiB
+            * 1024ll
+            // 8 GiB
+            * 8ll,
+        .rlim_max = 
+            // 1 KiB
+            1024ll
+            // 1 MiB
+            * 1024ll
+            // 1 GiB
+            * 1024ll
+            // 16 GiB
+            * 16ll
+    };
+    setrlimit(
+        RLIMIT_AS,
+        &r
+    );
+#endif
     std::vector<std::string> args {
         argv + 1, argv + argc
     };

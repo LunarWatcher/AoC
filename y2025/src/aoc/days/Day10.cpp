@@ -84,109 +84,30 @@ common::Output Day10::part2() {
     size_t processed = 0;
     for (auto& [_, buttons, joltages] : machines) {
         std::cout << "Now running " << processed++ << std::endl;
-        // common::EqSystem system {
-        //     buttons.size(),
-        //     joltages
-        // };
-        // assembleSystem(system, buttons);
-
-        // system.gaussEliminate();
-        // std::cout << system << "\n\n";
-        // auto res = system.solveForSmallestTotalWithMinConstraints(
-        //     0
-        // );
-        // auto presses = std::accumulate(
-        //     res.begin(),
-        //     res.end(),
-        //     0ll
-        // );
-
-        // std::cout << "System requires " << presses << std::endl;
-        // sum += presses;
-        
-        std::cout << joltages << std::endl;
-        std::vector<common::VecN<int64_t>> buttonVectors;
-        for (auto& button : buttons) {
-            std::vector<int64_t> values(joltages.size(), 0);
-
-            for (size_t i = 0; i < joltages.size(); ++i) {
-                if (button.is(i)) {
-                    values.at(i) = 1;
-                }
-            }
-
-            buttonVectors.push_back({
-                values
-            });
-        }
-
-        common::VecN<int64_t> target {
+        common::EqSystem system {
+            buttons.size(),
             joltages
         };
-        uint64_t maxJoltage = std::accumulate(
+        assembleSystem(system, buttons);
+
+        system.gaussEliminate();
+        std::cout << system << "\n\n";
+        auto systemMax = std::accumulate(
             joltages.begin(), joltages.end(), 0ll
         );
+        auto res = system.solveForSmallestTotalWithMinConstraints(
+            0,
+            512,
+            systemMax
+        );
+        auto presses = std::accumulate(
+            res.begin(),
+            res.end(),
+            0ll
+        );
 
-        auto cmp = [&](const SearchData& a, const SearchData& b) {
-            if (a.position.values.size() != b.position.values.size()) {
-                [[unlikely]]
-                return false;
-            }
-            return 
-                a.position.euclidean(target) > b.position.euclidean(target)
-                || a.buttonPresses < b.buttonPresses;
-        };
-        std::priority_queue<SearchData, std::vector<SearchData>, decltype(cmp)> q(cmp);
-
-        for (auto& vector : buttonVectors) {
-            // std::cout << "APPEND " << vector.values << std::endl;
-            q.push(SearchData {
-                .position = vector,
-                .buttonPresses = 1
-            });
-        }
-
-        uint64_t min = std::numeric_limits<uint64_t>::max();
-        // std::cout << "NEW" << std::endl;
-
-        while (q.size() > 0) {
-            auto [ position, currPresses ] = q.top();
-            q.pop();
-
-
-            if (position == target) {
-                min = std::min(currPresses, min);
-                break;
-            }
-
-            auto currDist = position.euclidean(target);
-
-            for (size_t i = 0; i < buttonVectors.size(); ++i) {
-                auto& next = buttonVectors.at(i);
-                auto presses = currPresses + 1;
-                if (presses > min || presses > maxJoltage) {
-                    continue;
-                }
-
-                auto newPos = position + next;
-
-                if (newPos.euclidean(target) > currDist) {
-                    continue;
-                }
-
-                for (size_t i = 0; i < target.values.size(); ++i) {
-                    if (newPos.values.at(i) > target.values.at(i)) {
-                        goto bad;
-                    }
-                }
-                
-                q.push({newPos, presses });
-bad:
-            }
-        }
-
-        // std::cout << "ADD " << min << std::endl;
-        sum += min;
+        std::cout << "System requires " << presses << std::endl;
+        sum += presses;
     }
     
     return sum;
