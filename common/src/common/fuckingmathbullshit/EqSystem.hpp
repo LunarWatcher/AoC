@@ -1,5 +1,9 @@
 #pragma once
 
+#include <common/platform/Int128.hpp>
+
+#ifdef HAS_128_BIT_INT
+
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -77,8 +81,7 @@ public:
 
     std::vector<int64_t> solveForSmallestTotalWithMinConstraints(
         int64_t min,
-        int64_t max,
-        int64_t systemMax = std::numeric_limits<int64_t>::max()
+        const std::vector<int64_t>& maxValues
     );
 
     const NaiveMatrix<int64_t>& getMat() const {
@@ -89,3 +92,5 @@ public:
 extern std::ostream& operator<<(std::ostream& ss, const EqSystem& system);
 
 }
+
+#endif

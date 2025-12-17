@@ -3,6 +3,7 @@
 #include "common/loader/Loader.hpp"
 #include "common/math/VecN.hpp"
 #include <limits>
+#include <thread>
 #include <numeric>
 #include <queue>
 #include <unordered_set>
@@ -80,6 +81,7 @@ void Day10::assembleSystem(
 
 common::Output Day10::part2() {
     uint64_t sum = 0;
+#ifdef HAS_128_BIT_INT
 
     size_t processed = 0;
     for (auto& [_, buttons, joltages] : machines) {
@@ -90,15 +92,29 @@ common::Output Day10::part2() {
         };
         assembleSystem(system, buttons);
 
+        std::cout << system << "\n";
         system.gaussEliminate();
         std::cout << system << "\n\n";
-        auto systemMax = std::accumulate(
-            joltages.begin(), joltages.end(), 0ll
-        );
+        std::vector<int64_t> maxPresses;
+
+        for (auto& button : buttons) {
+            auto max = std::numeric_limits<int64_t>::max();
+
+            for (size_t i = 0; i < joltages.size(); ++i) {
+                if (button.is(i)) {
+                    max = std::min(
+                        max,
+                        joltages.at(i)
+                    );
+                }
+            }
+
+            maxPresses.push_back(max);
+        }
+
         auto res = system.solveForSmallestTotalWithMinConstraints(
             0,
-            512,
-            systemMax
+            maxPresses
         );
         auto presses = std::accumulate(
             res.begin(),
@@ -111,6 +127,9 @@ common::Output Day10::part2() {
     }
     
     return sum;
+#else
+    return "Your system does not support __uint128_t";
+#endif
 }
 
 }

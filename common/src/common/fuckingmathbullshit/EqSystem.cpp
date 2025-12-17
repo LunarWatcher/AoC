@@ -1,5 +1,7 @@
 #include "EqSystem.hpp"
 
+#ifdef HAS_128_BIT_INT
+#include <chrono>
 #include <cassert>
 #include <cmath>
 #include <iostream>
@@ -164,6 +166,7 @@ void EqSystem::gaussEliminate() {
             }
         }
     }
+
 }
 int64_t EqSystem::sum(
     const std::vector<IntermediateEquation>& eq,
@@ -180,8 +183,7 @@ int64_t EqSystem::sum(
 
 std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
     int64_t min,
-    int64_t max,
-    int64_t systemMax
+    const std::vector<int64_t>& maxValues
 ) {
     std::vector<int64_t> out(variables, 0);
 
@@ -223,6 +225,19 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
         for (auto& freeIdx : this->freeVariables) {
             auto val = min;
 
+             for (auto& eq : equations) {
+                if (!eq.variables.contains(freeIdx) || eq.variables.size() > 1) {
+                    continue;
+                }
+                auto eqVal = eq.variables.at(freeIdx);
+                if (eqVal > 0 && eq.integerPart < 0) {
+                    val = std::max(
+                        val,
+                        (int64_t) std::floor((((double) -eq.integerPart) / ((double) eqVal)))
+                    );
+                }
+            }
+
             bruteForcedFreeVariables[freeIdx] = val;
         }
         std::cout << "Initial search state:" << std::endl;
@@ -236,37 +251,26 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
 
         int64_t minSystemValue = std::numeric_limits<int64_t>::max();
         decltype(bruteForcedFreeVariables) minState = bruteForcedFreeVariables;
-        std::unordered_set<uint64_t> visited;
+        std::unordered_set<__uint128_t> visited;
 
+        // auto last = std::chrono::system_clock::now();
+        // size_t loops = 0;
         while (q.size()) {
+            // auto now = std::chrono::system_clock::now();
+            // if (now - last > std::chrono::seconds(10)) {
+            //     std::cout << "It/s: " << loops / 10 << std::endl;
+            //     loops = 0;
+            //     last = now;
+            // }
+            // ++loops;
             auto state = q.front();
             q.pop();
-            uint64_t encoded = 0;
+            __uint128_t encoded = 0;
+
             for (auto& vIdx : freeVariables) {
                 auto& value = state.at(vIdx);
-                // We can (and _have_ to) eliminate free variables by system size, or the loop will never terminate.
-                // It's also fine because these count up, and are strictly positive, so it cannot cause problems
-                // Or at least not any more problems than the whole having to check 512^4 states causes.
-                //
-                // According to an analysis somewhere on the subreddit that I cannot find anymore, the most free
-                // variables any system has is 4, so the absolute worst case for the BFS search is a 3 or 4 variable
-                // system where the solution is several hundred layers down, as solutions cannot be pruned until that
-                // point. 
-                // I do wonder if DFS makes more sense in that regard, but DFS has very different requirements for
-                // caching, and I've already fucked it up previously.
-                //
-                // The problems with three or four free variables take such a ridiculous amount of time because of the
-                // search space.
-                // I think it could be narrowed down by going on a per-button basis, similar to the constraint
-                // introduced in one of the initial BFS/DFS solutions, but  that'll break the single max input statement
-                // here. A vector of maxes does sound more logical though
-                // A minimum constraint is already inferred where possible. One of the better observed instances of this
-                // is a 3-variable system that got reduced to (0, 0, 175) (worst-case ~88 million solutions), but this
-                // system als ohits on (14, 23, 179), so it does not need many iterations. 
-                // On another input, it doesn't yield any answers, so that assumption is apparently also bad, and was
-                // removed
-                if (value > max) goto outerBad;
-                encoded |= (((uint64_t) value) << (vIdx * 10));
+                if (value > maxValues.at(vIdx)) goto outerBad;
+                encoded |= (((__uint128_t) value) << (vIdx * 10));
             }
             if (!visited.insert(encoded).second) {
                 continue;
@@ -288,17 +292,14 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
                 // eliminate rows with illegally high values. This backfired massively and I haven't bothered renaming
                 // it because I'll probably have to do it again soon anyway
                 bool recoverablyBad = false;
-                bool any = false;
                 for (auto& eq : equations) {
-                    // if (!eq.variables.contains(variableIdx)) {
-                    //     continue;
-                    // }
-                    any = true;
-                    auto oldState = eq.compute(state);
                     auto v = eq.compute(
                         newState
                     );
                     systemValue += v;
+                    // if (!eq.variables.contains(variableIdx)) {
+                    //     continue;
+                    // }
                     // Prevent infinite downward spirals
                     if (v < 0) {
                         // This runs much faster of oldState < v, but this breaks several other search paths.
@@ -315,7 +316,7 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
                         // this results in some weird searches where the real problem isn't solved for, but it fucks off
                         // down all of x_3's tree (x_3 -> 512)
                         // if (
-                        //     oldState <= v
+                        //     oldState < v
                         // ) {
                         //     recoverablyBad = true;
                         //     continue;
@@ -323,54 +324,55 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
                         //
                         // This has to be here by default to force iteration over all options
                         recoverablyBad = true;
-                        // std::cout << "Discard " << i << "=" << newState.at(variableIdx) 
-                        //     << ": old=" << oldState << ", new=" << v << std::endl;
                         continue;
                     } 
-                    // we can't filter by v > max because of this one matrix in the form
-                    // [ 4, 2, -1, -1, 658 ]
-                    // which would immediately discard any and all solutions because they fail to bump that down in one
-                    // go.
-                    //
-                    // else if (v > max) {
-                    //     goto bad;
+                }
+                {
+                    // std::cout << systemValue << std::endl;
+                    // We can't discard by total system value because that eliminates early solutions too aggressively
+                    // if (systemValue > systemMax) {
+                    //     continue;
                     // }
+                    // Discard solution if it doesn't decrease the overall cost
+                    // This may discard some solutions where it doesn't grow fast enough, but it'll be good enough for
+                    // 2025d10p2
+                    decltype(out) intermediate(out.size(), -999999999);
+                    for (auto& equation : equations) {
+                        intermediate.at(equation.variable) = equation.compute(
+                            newState
+                        );
+                    }
+                    for (auto& [v, value] : newState) {
+                        intermediate.at(v) = value;
+                    }
 
-                }
-                if (!any) {
-                    continue;
-                }
-                // std::cout << systemValue << std::endl;
-                // We can't discard by total system value because that eliminates early solutions too aggressively
-                // if (systemValue > systemMax) {
-                //     continue;
-                // }
-                // Discard solution if it doesn't decrease the overall cost
-                // This may discard some solutions where it doesn't grow fast enough, but it'll be good enough for
-                // 2025d10p2
-                if (
-                    !recoverablyBad
-                    && systemValue < minSystemValue
-                ) {
-                    // std::cout << systemValue << " replaces " << minSystemValue << std::endl;
-                    minSystemValue = systemValue;
-                    minState = newState;
-                    newState.at(variableIdx) += 1;
-                    // There could still be a smaller state ahead
-                    q.push(newState);
+                    int64_t presses = std::accumulate(
+                        intermediate.begin(), intermediate.end(), 0ll
+                    );
 
-                    continue;
-                } else if (systemValue < minSystemValue){
-                    // std::cout << "yes" << std::endl;
-                    newState.at(variableIdx) += 1;
-                    q.push(newState);
+                    if (
+                        !recoverablyBad
+                        && presses <= minSystemValue
+                    ) {
+                        // std::cout << systemValue << " replaces " << minSystemValue << std::endl;
+                        minSystemValue = presses;
+                        minState = newState;
+                        newState.at(variableIdx) += 1;
+                        // There could still be a smaller state ahead
+                        q.push(newState);
+
+                        continue;
+                    } else if (presses <= minSystemValue){
+                        // std::cout << "yes" << std::endl;
+                        newState.at(variableIdx) += 1;
+
+                        q.push(newState);
+                    }
                 }
-bad:
                 continue;
             }
 outerBad:
         }
-done:
 
         if (minSystemValue == std::numeric_limits<int64_t>::max()) {
             // this won't trigger when the solution works
@@ -454,3 +456,4 @@ void EqSystem::div(
 }
 
 }
+#endif

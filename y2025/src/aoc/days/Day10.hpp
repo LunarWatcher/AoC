@@ -63,11 +63,6 @@ struct Button {
     bool operator==(const Button& other) const { return mask == other.mask; }
 };
 
-struct SearchData {
-    common::VecN<int64_t> position;
-    uint64_t buttonPresses = 0;
-};
-
 struct UselessMachine {
     size_t indicators;
     std::vector<Button> buttons;
