@@ -185,26 +185,6 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
 ) {
     std::vector<int64_t> out(variables, 0);
 
-    /*
-     * Given
-     * [
-     * 1, 0, 0, 1, 0, -1 | 2
-     * 0, 1, 0, 0, 0, 1 | 5
-     * 0, 0, 1, 1, 0, -1 | 1
-     * 0, 0, 0, 0, 1, 1 | 3
-     * ]
-     *
-     * We know:
-     * 1*x0 + 1*x3 - 1*x5 = 2
-     * 1*x1 + 1*x5 = 5
-     * 1*x2 + 1*x3 - 1*x5 = 1
-     * 1*x4 + 1*x5 = 3
-     *
-     * 1*x0 = - 1*x3 + 1*x5 + 2
-     * 1*x1 = - 1*x5 + 5
-     * 1*x2 = - 1*x3 + 1*x5 + 1
-     * 1*x4 = - 1*x5 + 3
-     */
     std::vector<IntermediateEquation> equations;
     for (size_t i = 0; i < mat.size(); ++i) {
         auto& row = mat.at(i);

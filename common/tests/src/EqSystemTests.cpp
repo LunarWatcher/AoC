@@ -17,7 +17,8 @@ TEST_CASE("Gaussian elimination") {
         });
 
         auto res = system.solveForSmallestTotalWithMinConstraints(
-            0
+            0,
+            1000
         );
 
         REQUIRE(res == std::vector<int64_t>{
