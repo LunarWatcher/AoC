@@ -1,8 +1,10 @@
+#include <common/debug/Formatters.hpp>
 #include "EqSystem.hpp"
 
 #include <cassert>
 #include <cmath>
 #include <functional>
+#include <iostream>
 #include <limits>
 #include <numeric>
 #include <queue>
@@ -105,6 +107,31 @@ void EqSystem::gaussEliminate() {
                     refPivotRowCopy
                 );
 
+                while (true) {
+                    // TODO: Fix name
+                    int64_t lcm = std::abs(rRow.at(pivotCol));
+                    for (size_t j = 0; j < rRow.size(); ++j) {
+                        if (j == pivotCol) {
+                            continue;
+                        }
+                        auto& val = rRow.at(j);
+                        if (val == 0) {
+                            continue;
+                        }
+                        auto nlcm = std::gcd(lcm, std::abs(rRow.at(j)));
+
+                        lcm = nlcm;
+                    }
+
+                    // for (auto& it : rRow) {
+                    //     std::cout << it << " ";
+                    // }
+                    if (lcm <= 1) {
+                        break;
+                    }
+
+                    div(rRow, lcm);
+                }
             }
 
             ++pivotRow;
@@ -123,32 +150,6 @@ void EqSystem::gaussEliminate() {
 
         if (row.at(pivot) < 0) {
             mult(row, -1);
-        }
-
-        // if (row.at(pivot) > 1) {
-        //     div(row, row.at(pivot));
-        // }
-        while (true) {
-            // TODO: Fix name
-            int64_t lcm = std::abs(row.at(pivot));
-            for (size_t j = 0; j < row.size(); ++j) {
-                if (j == pivot) {
-                    continue;
-                }
-                auto& val = row.at(j);
-                if (val == 0) {
-                    continue;
-                }
-                auto nlcm = std::gcd(lcm, std::abs(row.at(j)));
-
-                lcm = nlcm;
-            }
-
-            if (lcm <= 1) {
-                break;
-            }
-
-            div(row, lcm);
         }
     }
     for (size_t i = 0; i < variables; ++i) {
@@ -352,7 +353,7 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
 
                     if (
                         !recoverablyBad
-                        && presses < minSystemValue
+                        && presses <= minSystemValue
                     ) {
                         // std::cout << systemValue << " replaces " << minSystemValue << std::endl;
                         if (validate(intermediate)) {

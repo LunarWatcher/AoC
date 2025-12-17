@@ -51,8 +51,6 @@ common::Output Day10::part1() {
 
                 q.push({ click, state });
             }
-
-
         }
 
         if (!match.has_value()) {
@@ -121,8 +119,8 @@ common::Output Day10::part2() {
                     buttons.at(i).click(currJoltages, q);
                 }
 
-                for (size_t i = 0; i < currJoltages.size(); ++i) {
-                    if (currJoltages.at(i) != 0) {
+                for (auto& joltage : currJoltages) {
+                    if (joltage != 0) {
                         return false;
                     }
                 }
