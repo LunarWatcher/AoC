@@ -136,7 +136,6 @@ public:
         const std::vector<int64_t>& joltages
     );
 
-    bool p2borked() override { return true; }
 };
 
 }

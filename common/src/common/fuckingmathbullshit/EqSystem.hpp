@@ -4,8 +4,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
-#include <iostream>
-#include <limits>
+#include <functional>
 #include <ostream>
 #include <unordered_map>
 #include <vector>
@@ -78,7 +77,8 @@ public:
 
     std::vector<int64_t> solveForSmallestTotalWithMinConstraints(
         int64_t min,
-        const std::vector<int64_t>& maxValues
+        const std::vector<int64_t>& maxValues,
+        std::function<bool(const std::vector<int64_t>& solutions)> validate
     );
 
     const NaiveMatrix<int64_t>& getMat() const {

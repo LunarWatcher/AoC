@@ -82,18 +82,18 @@ void Day10::assembleSystem(
 common::Output Day10::part2() {
     uint64_t sum = 0;
 
-    size_t processed = 0;
+    // size_t processed = 0;
     for (auto& [_, buttons, joltages] : machines) {
-        std::cout << "Now running " << processed++ << std::endl;
+        // std::cout << "Now running " << processed++ << std::endl;
         common::EqSystem system {
             buttons.size(),
             joltages
         };
         assembleSystem(system, buttons);
 
-        std::cout << system << "\n";
+        // std::cout << system << "\n";
         system.gaussEliminate();
-        std::cout << system << "\n\n";
+        // std::cout << system << "\n\n";
         std::vector<int64_t> maxPresses;
 
         for (auto& button : buttons) {
@@ -113,7 +113,21 @@ common::Output Day10::part2() {
 
         auto res = system.solveForSmallestTotalWithMinConstraints(
             0,
-            maxPresses
+            maxPresses,
+            [&](const auto& variables) {
+                std::vector<int64_t> currJoltages = joltages;
+                for (size_t i = 0; i < variables.size(); ++i) {
+                    auto q = variables.at(i);
+                    buttons.at(i).click(currJoltages, q);
+                }
+
+                for (size_t i = 0; i < currJoltages.size(); ++i) {
+                    if (currJoltages.at(i) != 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         );
         auto presses = std::accumulate(
             res.begin(),
@@ -121,7 +135,7 @@ common::Output Day10::part2() {
             0ll
         );
 
-        std::cout << "System requires " << presses << std::endl;
+        // std::cout << "System requires " << presses << std::endl;
         sum += presses;
     }
     

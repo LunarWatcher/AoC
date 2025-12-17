@@ -1,11 +1,9 @@
 #include "EqSystem.hpp"
 
-#include <chrono>
 #include <cassert>
 #include <cmath>
-#include <iostream>
+#include <functional>
 #include <limits>
-#include <common/debug/Formatters.hpp>
 #include <numeric>
 #include <queue>
 #include <unordered_set>
@@ -182,7 +180,8 @@ int64_t EqSystem::sum(
 
 std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
     int64_t min,
-    const std::vector<int64_t>& maxValues
+    const std::vector<int64_t>& maxValues,
+    std::function<bool(const std::vector<int64_t>& solutions)> validate
 ) {
     std::vector<int64_t> out(variables, 0);
 
@@ -219,7 +218,7 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
     }
 
     if (this->freeVariables.size() > 0) {
-        std::cout << this->freeVariables.size() << std::endl;
+        // std::cout << this->freeVariables.size() << std::endl;
         std::unordered_map<size_t, int64_t> bruteForcedFreeVariables;
         for (auto& freeIdx : this->freeVariables) {
             auto val = min;
@@ -239,11 +238,11 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
 
             bruteForcedFreeVariables[freeIdx] = val;
         }
-        std::cout << "Initial search state:" << std::endl;
-        for (auto& [k, v] : bruteForcedFreeVariables) {
-            std::cout << k << ": " << v << ", ";
-        }
-        std::cout << "\n";
+        // std::cout << "Initial search state:" << std::endl;
+        // for (auto& [k, v] : bruteForcedFreeVariables) {
+        //     std::cout << k << ": " << v << ", ";
+        // }
+        // std::cout << "\n";
 
         std::queue<decltype(bruteForcedFreeVariables)> q;
         q.push(bruteForcedFreeVariables);
@@ -287,8 +286,6 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
                 auto newState = state;
 
 
-                int64_t systemValue = 0;
-
                 // This currently acts as a check if any of the rows are <0, but was initially named when it was used to
                 // eliminate rows with illegally high values. This backfired massively and I haven't bothered renaming
                 // it because I'll probably have to do it again soon anyway
@@ -297,7 +294,6 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
                     auto v = eq.compute(
                         newState
                     );
-                    systemValue += v;
                     // if (!eq.variables.contains(variableIdx)) {
                     //     continue;
                     // }
@@ -356,17 +352,19 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
 
                     if (
                         !recoverablyBad
-                        && presses <= minSystemValue
+                        && presses < minSystemValue
                     ) {
                         // std::cout << systemValue << " replaces " << minSystemValue << std::endl;
-                        minSystemValue = presses;
-                        minState = newState;
+                        if (validate(intermediate)) {
+                            minSystemValue = presses;
+                            minState = newState;
+                        }
                         newState.at(variableIdx) += 1;
                         // There could still be a smaller state ahead
                         q.push(newState);
 
                         continue;
-                    } else if (presses <= minSystemValue){
+                    } else {
                         // std::cout << "yes" << std::endl;
                         newState.at(variableIdx) += 1;
 
@@ -390,16 +388,16 @@ outerBad:
                 minState
             );
 
-            std::cout << "eq x_n = " << out.at(equation.variable) << std::endl;
-            std::cout << "\t" << equation.pivotMult << std::endl;
+            // std::cout << "eq x_n = " << out.at(equation.variable) << std::endl;
+            // std::cout << "\t" << equation.pivotMult << std::endl;
             if (out.at(equation.variable) < 0) {
                 throw std::runtime_error("Dumbass");
             }
         }
         for (auto& [v, value] : minState) {
-            std::cout
-                << "variable " << v << " with value " << out.at(v) << " -> "
-                << value << std::endl;
+            // std::cout
+            //     << "variable " << v << " with value " << out.at(v) << " -> "
+            //     << value << std::endl;
             out.at(v) = value;
         }
     }
