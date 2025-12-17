@@ -1,6 +1,5 @@
 #include "EqSystem.hpp"
 
-#ifdef HAS_128_BIT_INT
 #include <chrono>
 #include <cassert>
 #include <cmath>
@@ -251,7 +250,7 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
 
         int64_t minSystemValue = std::numeric_limits<int64_t>::max();
         decltype(bruteForcedFreeVariables) minState = bruteForcedFreeVariables;
-        std::unordered_set<__uint128_t> visited;
+        std::unordered_set<uint64_t> visited;
 
         // auto last = std::chrono::system_clock::now();
         // size_t loops = 0;
@@ -265,12 +264,14 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
             // ++loops;
             auto state = q.front();
             q.pop();
-            __uint128_t encoded = 0;
+            uint64_t encoded = 0;
 
-            for (auto& vIdx : freeVariables) {
+
+            for (size_t i = 0; i < freeVariables.size(); ++i) {
+                const auto& vIdx = freeVariables.at(i);
                 auto& value = state.at(vIdx);
                 if (value > maxValues.at(vIdx)) goto outerBad;
-                encoded |= (((__uint128_t) value) << (vIdx * 10));
+                encoded |= (((uint64_t) value) << (i * 10));
             }
             if (!visited.insert(encoded).second) {
                 continue;
@@ -336,7 +337,10 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
                     // Discard solution if it doesn't decrease the overall cost
                     // This may discard some solutions where it doesn't grow fast enough, but it'll be good enough for
                     // 2025d10p2
-                    decltype(out) intermediate(out.size(), -999999999);
+                    decltype(out) intermediate(
+                        out.size(),
+                        std::numeric_limits<int64_t>::min()
+                    );
                     for (auto& equation : equations) {
                         intermediate.at(equation.variable) = equation.compute(
                             newState
@@ -456,4 +460,3 @@ void EqSystem::div(
 }
 
 }
-#endif

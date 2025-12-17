@@ -1,8 +1,5 @@
 #pragma once
 
-#include <common/platform/Int128.hpp>
-
-#ifdef HAS_128_BIT_INT
 
 #include <cassert>
 #include <cmath>
@@ -92,5 +89,3 @@ public:
 extern std::ostream& operator<<(std::ostream& ss, const EqSystem& system);
 
 }
-
-#endif

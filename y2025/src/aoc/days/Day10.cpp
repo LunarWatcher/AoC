@@ -81,7 +81,6 @@ void Day10::assembleSystem(
 
 common::Output Day10::part2() {
     uint64_t sum = 0;
-#ifdef HAS_128_BIT_INT
 
     size_t processed = 0;
     for (auto& [_, buttons, joltages] : machines) {
@@ -127,9 +126,6 @@ common::Output Day10::part2() {
     }
     
     return sum;
-#else
-    return "Your system does not support __uint128_t";
-#endif
 }
 
 }
