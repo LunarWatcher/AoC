@@ -75,18 +75,8 @@ void EqSystem::gaussEliminate() {
                 }
                 auto& rRow = mat.at(i);
 
-                // double m = (double) rRow.at(pivotCol) / (double) refPivotRow.at(pivotCol);
-                // std::cout << "eliminate pivotCol=" << pivotCol  << " on " << i 
-                //     << " using m=" << m << " and pivotRow=" << pivotRow
-                //     << std::endl;
-                // for (auto& row : mat) {
-                //     for (auto& val : row) {
-                //         std::cout << val << " ";
-                //     }
-                //     std::cout << std::endl;
-                // }
-                // rRow.at(pivotCol) = 0;
                 auto a = rRow.at(pivotCol);
+                // No pivot in row, do not subtract
                 if (a == 0) {
                     continue;
                 }
@@ -96,6 +86,8 @@ void EqSystem::gaussEliminate() {
                     rRow,
                     b
                 );
+                // Create a copy of the row so we don't modify the global state of the pivot row. This avoids the pivot
+                // row quicky exploding in size
                 auto refPivotRowCopy = refPivotRow;
                 mult(
                     refPivotRowCopy,
@@ -108,8 +100,7 @@ void EqSystem::gaussEliminate() {
                 );
 
                 while (true) {
-                    // TODO: Fix name
-                    int64_t lcm = std::abs(rRow.at(pivotCol));
+                    int64_t gcd = std::abs(rRow.at(pivotCol));
                     for (size_t j = 0; j < rRow.size(); ++j) {
                         if (j == pivotCol) {
                             continue;
@@ -118,19 +109,15 @@ void EqSystem::gaussEliminate() {
                         if (val == 0) {
                             continue;
                         }
-                        auto nlcm = std::gcd(lcm, std::abs(rRow.at(j)));
-
-                        lcm = nlcm;
+                        gcd = std::gcd(gcd, std::abs(rRow.at(j)));
                     }
 
-                    // for (auto& it : rRow) {
-                    //     std::cout << it << " ";
-                    // }
-                    if (lcm <= 1) {
+                    // TODO: I'm pretty sure the < is impossible now that everything is abs'd
+                    if (gcd <= 1) {
                         break;
                     }
 
-                    div(rRow, lcm);
+                    div(rRow, gcd);
                 }
             }
 
@@ -266,13 +253,16 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
             q.pop();
             uint64_t encoded = 0;
 
-
             for (size_t i = 0; i < freeVariables.size(); ++i) {
                 const auto& vIdx = freeVariables.at(i);
                 auto& value = state.at(vIdx);
                 if (value > maxValues.at(vIdx)) goto outerBad;
                 encoded |= (((uint64_t) value) << (i * 10));
             }
+            // avoids visiting the same nodes in a different order. This could potentially be checked earlier to avoid
+            // writing as much to the set, but I don't really think it matters
+            // There's at most 64 insertions per iteration (four free variables; 4^4), and I don't think that takes up
+            // enough time to justify redoing it.
             if (!visited.insert(encoded).second) {
                 continue;
             }
@@ -286,11 +276,7 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
                 auto variableIdx = this->freeVariables.at(i);
                 auto newState = state;
 
-
-                // This currently acts as a check if any of the rows are <0, but was initially named when it was used to
-                // eliminate rows with illegally high values. This backfired massively and I haven't bothered renaming
-                // it because I'll probably have to do it again soon anyway
-                bool recoverablyBad = false;
+                bool isRowLegal = false;
                 for (auto& eq : equations) {
                     auto v = eq.compute(
                         newState
@@ -321,7 +307,7 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
                         // }
                         //
                         // This has to be here by default to force iteration over all options
-                        recoverablyBad = true;
+                        isRowLegal = true;
                         continue;
                     } 
                 }
@@ -352,10 +338,11 @@ std::vector<int64_t> EqSystem::solveForSmallestTotalWithMinConstraints(
                     );
 
                     if (
-                        !recoverablyBad
+                        !isRowLegal
                         && presses <= minSystemValue
                     ) {
-                        // std::cout << systemValue << " replaces " << minSystemValue << std::endl;
+                        // We need to properly validate here, because it isn't good enough to check if the row is above
+                        // 0. Not entirely sure why, but it makes a difference on a couple of the inputs.
                         if (validate(intermediate)) {
                             minSystemValue = presses;
                             minState = newState;
@@ -378,11 +365,11 @@ outerBad:
         }
 
         if (minSystemValue == std::numeric_limits<int64_t>::max()) {
-            // this won't trigger when the solution works
+            // this won't trigger when the solution works, but I'm leaving it in for good measure. It's a good indicator
+            // if I edit anything and break it later
             [[unlikely]]
             throw std::runtime_error("bad girl");
         }
-        assert(minState.size() == freeVariables.size());
 
         for (auto& equation : equations) {
             out.at(equation.variable) = equation.compute(
@@ -391,7 +378,7 @@ outerBad:
 
             // std::cout << "eq x_n = " << out.at(equation.variable) << std::endl;
             // std::cout << "\t" << equation.pivotMult << std::endl;
-            if (out.at(equation.variable) < 0) {
+            if (out.at(equation.variable) < min) {
                 throw std::runtime_error("Dumbass");
             }
         }

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common/fuckingmathbullshit/EqSystem.hpp"
-#include "common/math/VecN.hpp"
+#include "common/hardmath/EqSystem.hpp"
 #include "stc/StringUtil.hpp"
 #include <cassert>
 #include <common/Day.hpp>
@@ -83,6 +82,9 @@ struct UselessMachine {
             }
         }
 
+        // TODO: none of this parsing is particularly great, but I'm not yet sure how to generalise it. The input is too
+        // complex to generalise on a sample size of 1
+        // That said, it probably makes sense to set up an intermediate system that operates on raw streams or something
         size_t p = 0;
         while ((p = v.find('(', p + 1)) != std::string::npos) {
             auto end = v.find(')', p);
@@ -108,7 +110,6 @@ struct UselessMachine {
         for (auto& n : split) {
             joltages.push_back(std::stoll(n));
         }
-
     }
 };
 

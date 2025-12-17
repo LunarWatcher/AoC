@@ -1,9 +1,7 @@
 #include "Day10.hpp"
 #include <common/debug/Formatters.hpp>
 #include "common/loader/Loader.hpp"
-#include "common/math/VecN.hpp"
 #include <limits>
-#include <thread>
 #include <numeric>
 #include <queue>
 #include <unordered_set>
