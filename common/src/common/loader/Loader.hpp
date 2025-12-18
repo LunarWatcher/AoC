@@ -98,6 +98,15 @@ std::unordered_map<K, std::vector<V>> loadLinkedStringMap(
     return out;
 }
 
+inline std::ifstream open(const std::filesystem::path& input) {
+    std::ifstream f(input);
+    if (!f) {
+        throw std::runtime_error("Failed to find " + input.string());
+    }
+
+    return f;
+}
+
 template <typename T>
 std::vector<std::vector<T>> loadMap(
     const std::filesystem::path& input,
@@ -128,7 +137,7 @@ std::vector<std::vector<T>> loadMap(
 template <typename T>
 std::vector<T> loadMapAsObjectList(
     const std::filesystem::path& input,
-    std::function<bool(char)> parser
+    const std::function<bool(char)>& parser
 ) {
     std::ifstream f(input);
     if (!f) {

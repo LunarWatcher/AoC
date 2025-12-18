@@ -163,13 +163,6 @@ struct Vec2d {
     }
 };
 
-inline std::ostream& operator<<(std::ostream& ss, const Vec2& v) {
-    return ss << v.x << "," << v.y;
-}
-inline std::ostream& operator<<(std::ostream& ss, const Vec2d& v) {
-    return ss << v.x << "," << v.y;
-}
-
 struct Vec3 {
     int64_t x, y, z;
 
@@ -180,6 +173,41 @@ struct Vec3 {
         return (int64_t) std::sqrt(
             dx * dx + dy * dy + dz * dz
         );
+    }
+
+    Vec3& operator+=(const Vec3& other) {
+        this->x += other.x;
+        this->y += other.y;
+        this->z += other.z;
+        return *this;
+    }
+    Vec3& operator-=(const Vec3& other) {
+        this->x -= other.x;
+        this->y -= other.y;
+        this->z -= other.z;
+        return *this;
+    }
+
+    Vec3 operator-() const {
+        return {
+            -this->x,
+            -this->y,
+            -this->z
+        };
+    }
+    Vec3 operator-(const Vec3& other) const {
+        return {
+            this->x - other.x,
+            this->y - other.y,
+            this->z - other.z
+        };
+    }
+
+    bool operator==(const Vec3& other) const {
+        return 
+            this->x == other.x
+            && this->y == other.y 
+            && this->z == other.z;
     }
 };
 
@@ -207,6 +235,14 @@ struct Line {
     }
 };
 
-
+inline std::ostream& operator<<(std::ostream& ss, const Vec2& v) {
+    return ss << v.x << "," << v.y;
+}
+inline std::ostream& operator<<(std::ostream& ss, const Vec3& v) {
+    return ss << v.x << "," << v.y << "," << v.z;
+}
+inline std::ostream& operator<<(std::ostream& ss, const Vec2d& v) {
+    return ss << v.x << "," << v.y;
+}
 
 }
