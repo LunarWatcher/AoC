@@ -33,6 +33,9 @@ struct Direction {
     }
     int64_t y() const {
         if (dir == 0) { // up
+            // TODO: this is inverted by requirement of 2019d11p2
+            // I don't understand what part of the setup necessitates this
+            // maybe 2019d11p2 just is on an inverted axis?
             return  -1;
         } else if (dir == 2) { // down
             return 1;
