@@ -8,6 +8,44 @@
 #include <ostream>
 namespace common {
 
+struct Direction {
+    int dir;
+
+    explicit Direction(int dir) {
+        this->dir = dir;
+    }
+
+    void constrain() {
+        if (dir < 0) {
+            this->dir = 3;
+        } else if (dir > 3) {
+            this->dir = 0;
+        }
+    }
+
+    int64_t x() const {
+        if (dir == 1) { // Right
+            return  1;
+        } else if (dir == 3) { // left
+            return -1;
+        }
+        return 0;
+    }
+    int64_t y() const {
+        if (dir == 0) { // up
+            return  -1;
+        } else if (dir == 2) { // down
+            return 1;
+        }
+        return 0;
+    }
+
+    void operator+=(int val) {
+        dir += val;
+        constrain();
+    }
+};
+
 struct Vec2 {
     int64_t x;
     int64_t y;
@@ -39,6 +77,12 @@ struct Vec2 {
             x + other.x,
             y + other.y
         };
+    }
+
+    Vec2& operator+=(const Direction& dir) {
+        x += dir.x();
+        y += dir.y();
+        return *this;
     }
 
     Vec2 operator/(int64_t val) const {
@@ -108,16 +152,11 @@ struct Vec2d {
     }
 
     bool operator==(const Vec2d& other) const {
-        auto mx = std::max(x, other.x);
-        auto my = std::max(y, other.y);
-
-        auto minx = std::min(x, other.x);
-        auto miny = std::min(y, other.y);
         return 
             std::signbit(other.x) == std::signbit(x)
             && std::signbit(other.y) == std::signbit(y)
-            && std::abs(mx) - std::abs(minx) < std::numeric_limits<double>::epsilon()
-            && std::abs(my) - std::abs(miny) < std::numeric_limits<double>::epsilon();
+            && std::abs(x - other.x) < std::numeric_limits<double>::epsilon()
+            && std::abs(y - other.y) < std::numeric_limits<double>::epsilon();
     }
 };
 

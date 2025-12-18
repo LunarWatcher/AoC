@@ -9,6 +9,7 @@ add_library(aoc2019src STATIC
     aoc/days/Day8.cpp
     aoc/days/Day9.cpp
     aoc/days/Day10.cpp
+    aoc/days/Day11.cpp
 
     aoc/intcode/IntCode.cpp
 )

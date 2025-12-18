@@ -111,8 +111,6 @@ public:
 
     int64_t resolveMode(int64_t rawOp, short parameterIdx);
 
-    void inputs(const std::vector<int64_t>& inputs);
-
     /**
      * Used to recode the working set. Pass an empty vector to reset workingSet to source.
      */
