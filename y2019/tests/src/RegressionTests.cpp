@@ -1,7 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "aoc/days/Day1.hpp"
-#include "aoc/days/Day12.hpp"
 #include "aoc/days/Day2.hpp"
 #include "aoc/days/Day3.hpp"
 #include "aoc/days/Day4.hpp"
@@ -12,6 +11,8 @@
 #include "aoc/days/Day9.hpp"
 #include "aoc/days/Day10.hpp"
 #include "aoc/days/Day11.hpp"
+#include "aoc/days/Day12.hpp"
+#include "aoc/days/Day13.hpp"
 
 using namespace aoc2019;
 
@@ -121,3 +122,9 @@ TEST_CASE("Day 12", "[Regression]") {
     REQUIRE(std::get<uint64_t>(d.part2()) == 376203951569712ull);
 }
 
+TEST_CASE("Day 13 regression test", "[Regression]") {
+    Day13 d;
+    d.parse();
+    REQUIRE(std::get<uint64_t>(d.part1()) == 291);
+    REQUIRE(std::get<uint64_t>(d.part2()) == 14204);
+}

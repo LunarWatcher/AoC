@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 #include <stdexcept>
@@ -82,12 +83,18 @@ struct Program {
 
 struct StdStream {
     std::vector<int64_t> data;
+    std::optional<int64_t> onOverflow;
     /**
      * Read location; only used by input streams
      */
     size_t head = 0;
 
-    int64_t next() { return data.at(head++); }
+    int64_t next() { 
+        if (head >= data.size() && onOverflow.has_value()) {
+            return onOverflow.value();
+        }
+        return data.at(head++); 
+    }
     void push(int64_t value) { data.push_back(value); }
 };
 

@@ -2,7 +2,6 @@
 #include "common/loader/Loader.hpp"
 #include "common/math/Vec.hpp"
 #include <aoc/intcode/IntCode.hpp>
-#include <unordered_set>
 
 namespace aoc2019 {
 

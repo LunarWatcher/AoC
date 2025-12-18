@@ -1,9 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "aoc/days/Day1.hpp"
-#include "aoc/days/Day10.hpp"
-#include "aoc/days/Day11.hpp"
-#include "aoc/days/Day12.hpp"
 #include "aoc/days/Day2.hpp"
 #include "aoc/days/Day3.hpp"
 #include "aoc/days/Day4.hpp"
@@ -12,6 +9,9 @@
 #include "aoc/days/Day7.hpp"
 #include "aoc/days/Day8.hpp"
 #include "aoc/days/Day9.hpp"
+#include "aoc/days/Day10.hpp"
+#include "aoc/days/Day11.hpp"
+#include "aoc/days/Day12.hpp"
 
 using namespace aoc2025;
 
