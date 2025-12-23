@@ -22,16 +22,10 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
     GIT_TAG v3.11.0
 )
-FetchContent_Declare(
-    Eigen
-    GIT_REPOSITORY https://github.com/eigen-mirror/eigen
-    GIT_TAG 26fe567dd281486e9a2d133ee9a184eace5a975b
-)
 
 FetchContent_MakeAvailable(
     stc
     catch2
-    Eigen
 )
 
 add_subdirectory(common)

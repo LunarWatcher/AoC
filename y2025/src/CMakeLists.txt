@@ -23,7 +23,6 @@ target_link_libraries(
     aoc2025src
 PUBLIC
     aoc-common
-    Eigen3::Eigen
 )
 
 target_link_libraries(aoc-2025 aoc2025src)

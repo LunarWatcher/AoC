@@ -13,6 +13,7 @@
 #include "aoc/days/Day11.hpp"
 #include "aoc/days/Day12.hpp"
 #include "aoc/days/Day13.hpp"
+#include "aoc/days/Day14.hpp"
 
 using namespace aoc2019;
 
@@ -127,4 +128,11 @@ TEST_CASE("Day 13 regression test", "[Regression]") {
     d.parse();
     REQUIRE(std::get<uint64_t>(d.part1()) == 291);
     REQUIRE(std::get<uint64_t>(d.part2()) == 14204);
+}
+
+TEST_CASE("Day 14 regression test", "[Regression]") {
+    Day14 d;
+    d.parse();
+    REQUIRE(std::get<int64_t>(d.part1()) == 158482);
+    REQUIRE(std::get<int64_t>(d.part2()) == 7993831);
 }

@@ -12,6 +12,8 @@ add_executable(tests-2019
 
     src/Day12Tests.cpp
 
+    src/Day14Tests.cpp
+
     src/IntCodeTests.cpp
 
     # Exists to allow for improvements without needing to manually check new answers.
